@@ -30,11 +30,11 @@ export async function proxy(request: NextRequest) {
   if (
     pathname === '/login' ||
     pathname === '/onboard' ||
-    pathname.startsWith('/auth/') ||   // /auth/callback route handler
     pathname.startsWith('/api/') ||
     pathname === '/favicon.ico' ||
     pathname.startsWith('/_next') ||
-    pathname.startsWith('/manifest')
+    pathname.startsWith('/manifest') ||
+    pathname.startsWith('/icons/')
   ) {
     return supabaseResponse
   }
