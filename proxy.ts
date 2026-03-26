@@ -47,7 +47,10 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl)
   }
 
-  // First-time user: redirect to onboarding if no profile yet
+  // First-time user: only redirect to onboarding if no profile AND they're an
+  // email-auth user (merchants/admins). Phone-auth customers get a profile
+  // created automatically by the handle_new_user trigger with role='customer'
+  // so they never need onboarding.
   if (pathname !== '/onboard') {
     const { data: profile } = await supabase
       .from('profiles')
@@ -55,13 +58,24 @@ export async function proxy(request: NextRequest) {
       .eq('id', user.id)
       .maybeSingle()
 
+    // No profile at all — only possible if trigger failed; send to onboard
     if (!profile) {
+      // Phone-auth users: profile should exist; if not, just let them through to /wallet
+      const isPhoneUser = user.phone && !user.email
+      if (isPhoneUser) {
+        return NextResponse.redirect(new URL('/wallet', request.url))
+      }
       return NextResponse.redirect(new URL('/onboard', request.url))
+    }
+
+    // Customers (phone-auth or email customers) go to /wallet by default
+    if (pathname === '/' && profile.role === 'customer') {
+      return NextResponse.redirect(new URL('/wallet', request.url))
     }
 
     // Role-based protection for /merchant and /admin
     if (pathname.startsWith('/admin') && profile.role !== 'admin') {
-      return NextResponse.redirect(new URL('/', request.url))
+      return NextResponse.redirect(new URL('/wallet', request.url))
     }
 
     if (
@@ -69,7 +83,7 @@ export async function proxy(request: NextRequest) {
       profile.role !== 'merchant' &&
       profile.role !== 'admin'
     ) {
-      return NextResponse.redirect(new URL('/', request.url))
+      return NextResponse.redirect(new URL('/wallet', request.url))
     }
   }
 
