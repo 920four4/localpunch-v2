@@ -34,7 +34,7 @@ export default function OnboardPage() {
     setLoading(true)
 
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { router.push('/auth/login'); return }
+    if (!user) { router.push('/login'); return }
 
     const { error } = await supabase.from('profiles').upsert({
       id: user.id,

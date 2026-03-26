@@ -26,40 +26,28 @@ export async function proxy(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   const { pathname } = request.nextUrl
 
-  // Public routes
+  // Public routes — (auth) route group resolves to /login and /onboard at root
   if (
-    pathname.startsWith('/auth') ||
+    pathname === '/login' ||
+    pathname === '/onboard' ||
+    pathname.startsWith('/auth/') ||   // /auth/callback route handler
     pathname.startsWith('/api/') ||
     pathname === '/favicon.ico' ||
-    pathname.startsWith('/_next')
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/manifest')
   ) {
     return supabaseResponse
   }
 
   // Require auth for all other routes
   if (!user) {
-    return NextResponse.redirect(new URL('/auth/login', request.url))
-  }
-
-  // Role-based protection for /merchant and /admin
-  if (pathname.startsWith('/merchant') || pathname.startsWith('/admin')) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-
-    if (pathname.startsWith('/admin') && profile?.role !== 'admin') {
-      return NextResponse.redirect(new URL('/', request.url))
-    }
-
-    if (pathname.startsWith('/merchant') && profile?.role !== 'merchant' && profile?.role !== 'admin') {
-      return NextResponse.redirect(new URL('/', request.url))
-    }
+    const loginUrl = new URL('/login', request.url)
+    loginUrl.searchParams.set('next', pathname)
+    return NextResponse.redirect(loginUrl)
   }
 
   // First-time user: redirect to onboarding if no profile yet
-  if (!pathname.startsWith('/auth/onboard')) {
+  if (pathname !== '/onboard') {
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')
@@ -67,7 +55,20 @@ export async function proxy(request: NextRequest) {
       .maybeSingle()
 
     if (!profile) {
-      return NextResponse.redirect(new URL('/auth/onboard', request.url))
+      return NextResponse.redirect(new URL('/onboard', request.url))
+    }
+
+    // Role-based protection for /merchant and /admin
+    if (pathname.startsWith('/admin') && profile.role !== 'admin') {
+      return NextResponse.redirect(new URL('/', request.url))
+    }
+
+    if (
+      pathname.startsWith('/merchant') &&
+      profile.role !== 'merchant' &&
+      profile.role !== 'admin'
+    ) {
+      return NextResponse.redirect(new URL('/', request.url))
     }
   }
 
