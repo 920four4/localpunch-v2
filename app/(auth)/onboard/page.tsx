@@ -36,11 +36,10 @@ export default function OnboardPage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { router.push('/login'); return }
 
-    const { error } = await supabase.from('profiles').upsert({
-      id: user.id,
-      role: selectedRole,
-      display_name: displayName.trim(),
-    })
+    const { error } = await supabase
+      .from('profiles')
+      .update({ role: selectedRole, display_name: displayName.trim() })
+      .eq('id', user.id)
 
     setLoading(false)
     if (error) {
