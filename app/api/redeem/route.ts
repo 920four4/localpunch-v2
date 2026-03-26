@@ -1,4 +1,4 @@
-import { createAdminClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
@@ -10,50 +10,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'card_id required' }, { status: 400 })
     }
 
-    const supabase = await createAdminClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    // redeem_card RPC is SECURITY DEFINER — no service role needed
+    const supabase = await createClient()
 
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const { data, error } = await supabase.rpc('redeem_card', {
+      p_card_id: card_id,
+      p_notes: notes ?? null,
+    })
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    // Verify card belongs to user and is complete
-    const { data: card } = await supabase
-      .from('punch_cards')
-      .select('id, customer_id, is_complete, program_id')
-      .eq('id', card_id)
-      .single()
+    const result = data as { error?: string; success?: boolean; redemption_id?: string }
 
-    if (!card) {
-      return NextResponse.json({ error: 'Card not found' }, { status: 404 })
+    if (result.error) {
+      return NextResponse.json({ error: result.error }, { status: 400 })
     }
 
-    if (card.customer_id !== user.id) {
-      return NextResponse.json({ error: 'Not your card' }, { status: 403 })
-    }
-
-    if (!card.is_complete) {
-      return NextResponse.json({ error: 'Card not complete yet' }, { status: 400 })
-    }
-
-    // Check not already redeemed (card should be reset)
-    const { data: redemption, error: redeemError } = await supabase
-      .from('redemptions')
-      .insert({ card_id, approved_by: null, notes: notes ?? null })
-      .select('id')
-      .single()
-
-    if (redeemError) {
-      return NextResponse.json({ error: 'Failed to record redemption' }, { status: 500 })
-    }
-
-    // Reset the card for another cycle
-    await supabase
-      .from('punch_cards')
-      .update({ punch_count: 0, is_complete: false })
-      .eq('id', card_id)
-
-    return NextResponse.json({ success: true, redemption_id: redemption.id })
+    return NextResponse.json({ success: true, redemption_id: result.redemption_id })
   } catch (err) {
     console.error('Redeem error:', err)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

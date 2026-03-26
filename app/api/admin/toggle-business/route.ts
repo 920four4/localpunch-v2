@@ -1,16 +1,25 @@
-import { createAdminClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
-  const supabase = await createAdminClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  try {
+    const { id, is_active } = await request.json()
 
-  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-  if (profile?.role !== 'admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    const supabase = await createClient()
 
-  const { id, is_active } = await request.json()
-  const { error } = await supabase.from('businesses').update({ is_active }).eq('id', id)
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json({ success: true })
+    const { data, error } = await supabase.rpc('admin_toggle_business', {
+      p_business_id: id,
+      p_is_active: is_active,
+    })
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    const result = data as { error?: string; success?: boolean }
+    if (result.error) return NextResponse.json({ error: result.error }, { status: 403 })
+
+    return NextResponse.json({ success: true })
+  } catch (err) {
+    console.error('Toggle business error:', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
 }

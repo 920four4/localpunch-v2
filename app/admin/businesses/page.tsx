@@ -1,8 +1,8 @@
-import { createAdminClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import ToggleBusinessButton from './toggle-button'
 
 export default async function AdminBusinessesPage() {
-  const supabase = await createAdminClient()
+  const supabase = await createClient()
 
   const { data: businesses } = await supabase
     .from('businesses')

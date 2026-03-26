@@ -1,7 +1,7 @@
-import { createAdminClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 
 export default async function AdminPage() {
-  const supabase = await createAdminClient()
+  const supabase = await createClient()
 
   const { data: statsRow } = await supabase
     .from('platform_stats')

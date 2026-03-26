@@ -1,20 +1,25 @@
-import { createAdminClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
-  const supabase = await createAdminClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  try {
+    const { user_id, role } = await request.json()
 
-  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-  if (profile?.role !== 'admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    const supabase = await createClient()
 
-  const { user_id, role } = await request.json()
-  if (!['customer', 'merchant', 'admin'].includes(role)) {
-    return NextResponse.json({ error: 'Invalid role' }, { status: 400 })
+    const { data, error } = await supabase.rpc('admin_change_role', {
+      p_user_id: user_id,
+      p_role: role,
+    })
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    const result = data as { error?: string; success?: boolean }
+    if (result.error) return NextResponse.json({ error: result.error }, { status: 403 })
+
+    return NextResponse.json({ success: true })
+  } catch (err) {
+    console.error('Change role error:', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
-
-  const { error } = await supabase.from('profiles').update({ role }).eq('id', user_id)
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json({ success: true })
 }

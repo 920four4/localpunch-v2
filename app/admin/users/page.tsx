@@ -1,8 +1,8 @@
-import { createAdminClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import ChangeRoleButton from './change-role-button'
 
 export default async function AdminUsersPage() {
-  const supabase = await createAdminClient()
+  const supabase = await createClient()
 
   const { data: profiles } = await supabase
     .from('profiles')
