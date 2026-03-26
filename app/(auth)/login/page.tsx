@@ -2,49 +2,29 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
-type Step = 'email' | 'otp'
-
 export default function LoginPage() {
-  const [step, setStep] = useState<Step>('email')
   const [email, setEmail] = useState('')
-  const [otp, setOtp] = useState('')
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
-  const supabase = createClient()
+  const [sent, setSent] = useState(false)
 
-  async function handleSendOtp(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
+    const supabase = createClient()
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { shouldCreateUser: true },
+      options: {
+        shouldCreateUser: true,
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
     })
     setLoading(false)
     if (error) {
       toast.error(error.message)
     } else {
-      setStep('otp')
-      toast.success('Check your email for a 6-digit code!')
-    }
-  }
-
-  async function handleVerifyOtp(e: React.FormEvent) {
-    e.preventDefault()
-    setLoading(true)
-    const { error } = await supabase.auth.verifyOtp({
-      email,
-      token: otp.trim(),
-      type: 'email',
-    })
-    setLoading(false)
-    if (error) {
-      toast.error('Invalid code — double check and try again.')
-    } else {
-      router.push('/')
-      router.refresh()
+      setSent(true)
     }
   }
 
@@ -65,13 +45,15 @@ export default function LoginPage() {
           <p className="text-[#6B7280] mt-1 text-sm">Digital punch cards for local businesses</p>
         </div>
 
-        {step === 'email' ? (
+        {!sent ? (
           <div className="nb-card-flat p-6">
             <h2 className="text-lg font-semibold mb-1" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
               Sign in
             </h2>
-            <p className="text-sm text-[#6B7280] mb-5">We'll send a 6-digit code to your email.</p>
-            <form onSubmit={handleSendOtp} className="space-y-4">
+            <p className="text-sm text-[#6B7280] mb-5">
+              Enter your email — we'll send you a sign-in link.
+            </p>
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium mb-1.5">
                   Email address
@@ -92,50 +74,27 @@ export default function LoginPage() {
                 disabled={loading}
                 className="nb-btn-primary w-full text-sm font-semibold py-2.5 disabled:opacity-50"
               >
-                {loading ? 'Sending…' : 'Send code →'}
+                {loading ? 'Sending…' : 'Send sign-in link →'}
               </button>
             </form>
           </div>
         ) : (
-          <div className="nb-card-flat p-6">
-            <h2 className="text-lg font-semibold mb-1" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
-              Enter your code
+          <div className="nb-card-flat p-6 text-center">
+            <div className="text-4xl mb-4">📬</div>
+            <h2 className="text-lg font-semibold mb-2" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
+              Check your inbox
             </h2>
-            <p className="text-sm text-[#6B7280] mb-5">
-              Sent to <strong>{email}</strong>
+            <p className="text-sm text-[#6B7280] mb-4">
+              We sent a sign-in link to <strong>{email}</strong>. Click it to continue — no password needed.
             </p>
-            <form onSubmit={handleVerifyOtp} className="space-y-4">
-              <div>
-                <label htmlFor="otp" className="block text-sm font-medium mb-1.5">
-                  6-digit code
-                </label>
-                <input
-                  id="otp"
-                  type="text"
-                  inputMode="numeric"
-                  pattern="\d{6}"
-                  maxLength={6}
-                  required
-                  autoFocus
-                  value={otp}
-                  onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
-                  placeholder="123456"
-                  className="w-full border-2 border-[#1a1a1a] rounded-lg px-3 py-2.5 text-sm bg-white text-center text-xl tracking-[0.4em] font-mono focus:outline-none focus:ring-2 focus:ring-[#FFE566]"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={loading || otp.length < 6}
-                className="nb-btn-primary w-full text-sm font-semibold py-2.5 disabled:opacity-50"
-              >
-                {loading ? 'Verifying…' : 'Sign in →'}
-              </button>
-            </form>
+            <p className="text-xs text-[#9CA3AF]">
+              Didn't get it? Check your spam folder.
+            </p>
             <button
-              onClick={() => { setStep('email'); setOtp('') }}
-              className="mt-4 w-full text-center text-sm text-[#6B7280] underline underline-offset-2"
+              onClick={() => setSent(false)}
+              className="mt-5 w-full text-center text-sm text-[#6B7280] underline underline-offset-2"
             >
-              ← Use a different email
+              ← Try a different email
             </button>
           </div>
         )}

@@ -30,6 +30,7 @@ export async function proxy(request: NextRequest) {
   if (
     pathname === '/login' ||
     pathname === '/onboard' ||
+    pathname.startsWith('/auth/') ||
     pathname.startsWith('/api/') ||
     pathname === '/favicon.ico' ||
     pathname.startsWith('/_next') ||
