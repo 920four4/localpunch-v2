@@ -46,7 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       className={`${spaceGrotesk.variable} ${dmSans.variable} ${jetbrainsMono.variable} h-full`}
     >
-      <body className="min-h-full bg-background text-foreground antialiased">
+      <body className="min-h-full bg-background text-foreground antialiased" suppressHydrationWarning>
         {children}
         <Toaster richColors position="top-center" />
       </body>
