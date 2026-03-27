@@ -35,7 +35,9 @@ export async function proxy(request: NextRequest) {
     pathname === '/favicon.ico' ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/manifest') ||
-    pathname.startsWith('/icons/')
+    pathname.startsWith('/icons/') ||
+    pathname === '/privacy-policy' ||
+    pathname === '/terms'
   ) {
     return supabaseResponse
   }
