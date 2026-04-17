@@ -1,5 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
-import { signQrToken, hashToken, TTL_SECONDS } from '@/lib/qr/tokens'
+import {
+  signQrToken,
+  hashToken,
+  buildPunchUrl,
+  TTL_SECONDS,
+} from '@/lib/qr/tokens'
 import { NextRequest, NextResponse } from 'next/server'
 import QRCode from 'qrcode'
 
@@ -64,8 +69,12 @@ export async function POST(request: NextRequest) {
       expires_at: expiresAt,
     })
 
-    // Generate QR code as data URL
-    const qrDataUrl = await QRCode.toDataURL(token, {
+    // QR payload is now a full URL so that scanning with the phone's native
+    // camera opens the punch-claim page directly — no in-app scanner required.
+    const origin = request.nextUrl.origin
+    const punchUrl = buildPunchUrl(token, origin)
+
+    const qrDataUrl = await QRCode.toDataURL(punchUrl, {
       errorCorrectionLevel: 'H',
       margin: 2,
       width: 400,
@@ -74,6 +83,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       token,
+      punch_url: punchUrl,
       qr_data_url: qrDataUrl,
       expires_at: expiresAt,
       ttl_seconds: TTL_SECONDS,

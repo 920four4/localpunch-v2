@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import type { PunchResult } from '@/lib/types'
+import { extractTokenFromScan } from '@/lib/qr/tokens'
 
 export default function ScanPage() {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -49,7 +50,10 @@ export default function ScanPage() {
     }
   }, [])
 
-  async function handlePunch(token: string) {
+  async function handlePunch(scanned: string) {
+    // New QR codes encode a full /p/<token> URL; old ones encoded the raw
+    // JWT. Accept either by extracting the last path segment when needed.
+    const token = extractTokenFromScan(scanned)
     try {
       const res = await fetch('/api/punch', {
         method: 'POST',

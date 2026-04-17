@@ -210,8 +210,14 @@ export default function QrDisplayPage() {
         )}
 
         <p className="text-xs text-center text-[#6B7280] max-w-xs">
-          Customers scan this with the LocalPunch app to collect a punch. Only valid for 5 minutes.
+          Customers scan this with their phone camera — no app needed. QR refreshes every 5 minutes for security.
         </p>
+        <Link
+          href="/merchant/punch"
+          className="text-xs text-[#1a1a1a] underline underline-offset-2 hover:bg-[#FFE566] px-1"
+        >
+          Phone dead? Give a punch by phone number →
+        </Link>
 
         <button
           onClick={() => fetchQrToken(selectedProgram)}
@@ -228,8 +234,8 @@ export default function QrDisplayPage() {
 function PageHeader() {
   return (
     <div>
-      <h1 className="page-header text-2xl">QR Code Display</h1>
-      <p className="text-sm text-[#6B7280] mt-0.5">Keep this open on your counter or tablet. Auto-refreshes every 5 minutes.</p>
+      <h1 className="page-header text-2xl">Counter QR Code</h1>
+      <p className="text-sm text-[#6B7280] mt-0.5">Keep this open on your counter or tablet. Customers scan with any phone camera — no app install needed.</p>
     </div>
   )
 }
