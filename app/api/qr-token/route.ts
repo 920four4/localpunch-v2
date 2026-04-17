@@ -19,10 +19,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Verify merchant owns this program's business
+    // Verify merchant owns this program's business and that the shop is active.
     const { data: program } = await supabase
       .from('loyalty_programs')
-      .select('id, business_id, businesses(owner_id)')
+      .select('id, business_id, businesses(owner_id, is_active)')
       .eq('id', program_id)
       .single()
 
@@ -30,9 +30,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Program not found' }, { status: 404 })
     }
 
-    const business = program.businesses as unknown as { owner_id: string } | null
+    const business = program.businesses as unknown as
+      | { owner_id: string; is_active: boolean }
+      | null
     if (!business || business.owner_id !== user.id) {
       return NextResponse.json({ error: 'Not your program' }, { status: 403 })
+    }
+
+    if (!business.is_active) {
+      return NextResponse.json(
+        {
+          error: 'inactive_subscription',
+          message: 'Activate your shop to generate QR codes.',
+        },
+        { status: 402 }
+      )
     }
 
     // Sign the token

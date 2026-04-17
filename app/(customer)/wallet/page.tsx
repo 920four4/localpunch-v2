@@ -1,10 +1,12 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import type { PunchCard } from '@/lib/types'
+import EmailBanner from './email-banner'
 
 export default async function WalletPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  const hasEmail = Boolean(user?.email)
 
   const { data: cards } = await supabase
     .from('punch_cards')
@@ -27,6 +29,8 @@ export default async function WalletPage() {
         <h1 className="page-header text-2xl">My Cards</h1>
         <p className="text-sm text-[#6B7280] mt-0.5">Scan a QR code at a business to collect punches.</p>
       </div>
+
+      <EmailBanner hasEmail={hasEmail} />
 
       {activeCards.length === 0 && completedCards.length === 0 && (
         <div className="nb-card-flat p-8 text-center">

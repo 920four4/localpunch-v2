@@ -23,17 +23,32 @@ export default function SetupBusinessPage() {
 
     const slug = slugify(form.name) + '-' + Math.random().toString(36).slice(2, 6)
 
-    const { error } = await supabase.from('businesses').insert({
-      owner_id: user.id,
-      name: form.name,
-      slug,
-      address: form.address || null,
-    })
+    const { data: inserted, error } = await supabase
+      .from('businesses')
+      .insert({
+        owner_id: user.id,
+        name: form.name,
+        slug,
+        address: form.address || null,
+      })
+      .select('id')
+      .single()
 
     setSaving(false)
     if (error) { toast.error(error.message); return }
-    toast.success('Business created!')
-    router.push('/merchant')
+
+    // Fire the Loops onboarding event server-side. Non-blocking — if the
+    // Loops API is down we still send the merchant to billing.
+    if (inserted?.id) {
+      fetch('/api/merchant/signup-event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ business_id: inserted.id }),
+      }).catch(() => {})
+    }
+
+    toast.success('Business created! Activate to go live.')
+    router.push('/merchant/billing')
   }
 
   return (

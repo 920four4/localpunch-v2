@@ -26,6 +26,24 @@ export async function POST(request: NextRequest): Promise<NextResponse<PunchResu
     // Use anon client — the record_punch RPC is SECURITY DEFINER
     const supabase = await createClient()
 
+    // Refuse if the shop's subscription isn't active.
+    const { data: program } = await supabase
+      .from('loyalty_programs')
+      .select('businesses(is_active)')
+      .eq('id', program_id)
+      .single()
+
+    const biz = program?.businesses as unknown as { is_active: boolean } | null
+    if (!biz || !biz.is_active) {
+      return NextResponse.json(
+        {
+          error: 'inactive_subscription',
+          message: 'This shop isn\u2019t active yet — ask the owner to activate.',
+        },
+        { status: 402 }
+      )
+    }
+
     const { data, error } = await supabase.rpc('record_punch', {
       p_program_id: program_id,
       p_token_hash: tokenHash,

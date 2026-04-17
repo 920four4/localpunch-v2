@@ -13,6 +13,25 @@ export async function POST(request: NextRequest) {
     // redeem_card RPC is SECURITY DEFINER — no service role needed
     const supabase = await createClient()
 
+    // Refuse if the shop backing this card isn't active.
+    const { data: card } = await supabase
+      .from('punch_cards')
+      .select('loyalty_programs(businesses(is_active))')
+      .eq('id', card_id)
+      .single()
+
+    const biz = (card?.loyalty_programs as unknown as { businesses: { is_active: boolean } | null })
+      ?.businesses
+    if (!biz || !biz.is_active) {
+      return NextResponse.json(
+        {
+          error: 'inactive_subscription',
+          message: 'This shop isn\u2019t active yet.',
+        },
+        { status: 402 }
+      )
+    }
+
     const { data, error } = await supabase.rpc('redeem_card', {
       p_card_id: card_id,
       p_notes: notes ?? null,

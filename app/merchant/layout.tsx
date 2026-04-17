@@ -11,21 +11,43 @@ const navItems = [
   { href: '/merchant/qr', icon: '📱', label: 'Show QR' },
   { href: '/merchant/customers', icon: '👥', label: 'Customers' },
   { href: '/merchant/analytics', icon: '📈', label: 'Analytics' },
+  { href: '/merchant/billing', icon: '💳', label: 'Billing' },
 ]
 
 export default function MerchantLayout({ children }: { children: React.ReactNode }) {
   const [businessName, setBusinessName] = useState('')
+  const [hasBusiness, setHasBusiness] = useState<boolean | null>(null)
+  const [isActive, setIsActive] = useState<boolean | null>(null)
+  const pathname = usePathname()
   const supabase = createClient()
 
   useEffect(() => {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
-      const { data } = await supabase.from('businesses').select('name').eq('owner_id', user.id).single()
-      if (data) setBusinessName(data.name)
+      const { data } = await supabase
+        .from('businesses')
+        .select('name, is_active')
+        .eq('owner_id', user.id)
+        .maybeSingle()
+      if (data) {
+        setBusinessName(data.name)
+        setHasBusiness(true)
+        setIsActive(Boolean(data.is_active))
+      } else {
+        setHasBusiness(false)
+        setIsActive(null)
+      }
     }
     load()
-  }, [])
+    // Re-run when the route changes so the banner updates after checkout.
+  }, [pathname])
+
+  const showActivationBanner =
+    hasBusiness === true &&
+    isActive === false &&
+    pathname !== '/merchant/billing' &&
+    pathname !== '/merchant/setup'
 
   return (
     <div className="min-h-screen bg-[#FAFAF8] flex flex-col lg:flex-row">
@@ -55,8 +77,33 @@ export default function MerchantLayout({ children }: { children: React.ReactNode
       </div>
 
       <main className="flex-1 p-5 lg:p-8 max-w-5xl">
+        {showActivationBanner && <ActivationBanner />}
         {children}
       </main>
+    </div>
+  )
+}
+
+function ActivationBanner() {
+  return (
+    <div className="mb-6 nb-card-flat p-4 bg-[#FFE566] flex flex-col sm:flex-row sm:items-center gap-3">
+      <div className="flex-1">
+        <p
+          className="font-bold text-sm"
+          style={{ fontFamily: 'var(--font-space-grotesk)' }}
+        >
+          🔒 Your shop isn&rsquo;t active yet.
+        </p>
+        <p className="text-xs text-[#1a1a1a]/80 mt-0.5">
+          Customers can&rsquo;t join or punch cards until you activate. $60/month or $600/year — cancel anytime.
+        </p>
+      </div>
+      <Link
+        href="/merchant/billing"
+        className="bg-[#1a1a1a] text-white rounded-full px-4 py-2 text-sm font-semibold hover:bg-black transition whitespace-nowrap"
+      >
+        Activate now →
+      </Link>
     </div>
   )
 }
