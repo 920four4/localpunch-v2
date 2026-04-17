@@ -1,6 +1,20 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
+// Copies any cookies Supabase refreshed during getUser() onto a new response
+// (e.g. a redirect). Without this, token refreshes are lost on navigation that
+// results in NextResponse.redirect, causing the user to appear logged out on
+// the next request.
+function forwardAuthCookies(
+  from: NextResponse,
+  to: NextResponse,
+): NextResponse {
+  from.cookies.getAll().forEach((cookie) => {
+    to.cookies.set(cookie)
+  })
+  return to
+}
+
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
@@ -13,18 +27,23 @@ export async function proxy(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+          cookiesToSet.forEach(({ name, value, options }) =>
+            request.cookies.set({ name, value, ...options }),
+          )
           supabaseResponse = NextResponse.next({ request })
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            supabaseResponse.cookies.set(name, value, options),
           )
         },
       },
-    }
+    },
   )
 
   const { data: { user } } = await supabase.auth.getUser()
   const { pathname } = request.nextUrl
+
+  const redirect = (url: URL) =>
+    forwardAuthCookies(supabaseResponse, NextResponse.redirect(url))
 
   // Public routes — landing, login, onboard, legal, assets
   const isPublic =
@@ -52,7 +71,7 @@ export async function proxy(request: NextRequest) {
         profile?.role === 'admin' ? '/admin' :
         profile?.role === 'merchant' ? '/merchant' :
         '/wallet'
-      return NextResponse.redirect(new URL(dest, request.url))
+      return redirect(new URL(dest, request.url))
     }
     return supabaseResponse
   }
@@ -61,7 +80,7 @@ export async function proxy(request: NextRequest) {
   if (!user) {
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('next', pathname)
-    return NextResponse.redirect(loginUrl)
+    return redirect(loginUrl)
   }
 
   // First-time user: only redirect to onboarding if no profile AND they're an
@@ -80,14 +99,14 @@ export async function proxy(request: NextRequest) {
       // Phone-auth users: profile should exist; if not, just let them through to /wallet
       const isPhoneUser = user.phone && !user.email
       if (isPhoneUser) {
-        return NextResponse.redirect(new URL('/wallet', request.url))
+        return redirect(new URL('/wallet', request.url))
       }
-      return NextResponse.redirect(new URL('/onboard', request.url))
+      return redirect(new URL('/onboard', request.url))
     }
 
     // Role-based protection for /merchant and /admin
     if (pathname.startsWith('/admin') && profile.role !== 'admin') {
-      return NextResponse.redirect(new URL('/wallet', request.url))
+      return redirect(new URL('/wallet', request.url))
     }
 
     if (
@@ -95,7 +114,7 @@ export async function proxy(request: NextRequest) {
       profile.role !== 'merchant' &&
       profile.role !== 'admin'
     ) {
-      return NextResponse.redirect(new URL('/wallet', request.url))
+      return redirect(new URL('/wallet', request.url))
     }
   }
 
