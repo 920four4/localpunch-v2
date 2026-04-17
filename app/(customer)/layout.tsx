@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const navItems = [
-  { href: '/', icon: '🎴', label: 'Cards' },
+  { href: '/wallet', icon: '🎴', label: 'Cards' },
   { href: '/scan', icon: '📷', label: 'Scan' },
   { href: '/history', icon: '📋', label: 'History' },
 ]
@@ -12,12 +12,13 @@ const navItems = [
 export default function CustomerLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-[#FAFAF8] flex flex-col pb-20">
-      <header className="sticky top-0 z-10 bg-[#FAFAF8] border-b-2 border-[#1a1a1a] px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-lg font-bold tracking-tight" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
-            🥊 LocalPunch
+      <header className="sticky top-0 z-10 bg-[#FAFAF8]/90 backdrop-blur border-b border-[#1a1a1a]/10 px-4 py-3 flex items-center justify-between">
+        <Link href="/wallet" className="flex items-center gap-2">
+          <span className="inline-flex items-center justify-center w-7 h-7 bg-[#FFE566] rounded-md text-sm">🥊</span>
+          <span className="text-base font-bold tracking-tight" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
+            LocalPunch
           </span>
-        </div>
+        </Link>
       </header>
 
       <main className="flex-1 px-4 py-5 max-w-lg mx-auto w-full">

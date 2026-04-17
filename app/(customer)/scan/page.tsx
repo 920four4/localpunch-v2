@@ -99,14 +99,14 @@ export default function ScanPage() {
         )}
         <div className="flex gap-3 mt-4">
           <button
-            onClick={() => router.push('/')}
+            onClick={() => router.push('/wallet')}
             className="nb-btn-ghost text-sm px-5 py-2.5"
           >
             View cards
           </button>
           {result.is_complete && (
             <button
-              onClick={() => router.push('/')}
+              onClick={() => router.push('/wallet')}
               className="nb-btn-primary text-sm px-5 py-2.5 font-semibold"
             >
               Redeem reward →

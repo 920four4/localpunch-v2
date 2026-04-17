@@ -26,8 +26,9 @@ export async function proxy(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   const { pathname } = request.nextUrl
 
-  // Public routes — (auth) route group resolves to /login and /onboard at root
-  if (
+  // Public routes — landing, login, onboard, legal, assets
+  const isPublic =
+    pathname === '/' ||
     pathname === '/login' ||
     pathname === '/onboard' ||
     pathname.startsWith('/auth/') ||
@@ -38,7 +39,21 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/icons/') ||
     pathname === '/privacy-policy' ||
     pathname === '/terms'
-  ) {
+
+  if (isPublic) {
+    // Signed-in users hitting the marketing landing get bounced to their app
+    if (pathname === '/' && user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .maybeSingle()
+      const dest =
+        profile?.role === 'admin' ? '/admin' :
+        profile?.role === 'merchant' ? '/merchant' :
+        '/wallet'
+      return NextResponse.redirect(new URL(dest, request.url))
+    }
     return supabaseResponse
   }
 
@@ -68,11 +83,6 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL('/wallet', request.url))
       }
       return NextResponse.redirect(new URL('/onboard', request.url))
-    }
-
-    // Customers (phone-auth or email customers) go to /wallet by default
-    if (pathname === '/' && profile.role === 'customer') {
-      return NextResponse.redirect(new URL('/wallet', request.url))
     }
 
     // Role-based protection for /merchant and /admin

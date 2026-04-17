@@ -88,9 +88,9 @@ function SetupBusinessPrompt() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-4">
       <div className="text-4xl mb-4">🏪</div>
-      <h2 className="text-xl font-bold mb-2" style={{ fontFamily: 'var(--font-space-grotesk)' }}>Set up your business</h2>
-      <p className="text-sm text-[#6B7280] mb-5">You need to create your business profile before managing loyalty programs.</p>
-      <Link href="/merchant/setup" className="nb-btn-primary font-semibold px-6 py-3">Set up business →</Link>
+      <h2 className="text-xl font-bold mb-2" style={{ fontFamily: 'var(--font-space-grotesk)' }}>Finish setting up your shop</h2>
+      <p className="text-sm text-[#6B7280] mb-5 max-w-sm">Add your business name and (optional) address. Takes 30 seconds.</p>
+      <Link href="/merchant/setup" className="bg-[#1a1a1a] text-white rounded-full font-semibold px-6 py-3 text-sm hover:bg-black transition">Add business details →</Link>
     </div>
   )
 }

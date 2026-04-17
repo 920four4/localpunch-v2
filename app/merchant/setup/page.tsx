@@ -19,7 +19,7 @@ export default function SetupBusinessPage() {
     e.preventDefault()
     setSaving(true)
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { router.push('/auth/login'); return }
+    if (!user) { router.push('/login'); return }
 
     const slug = slugify(form.name) + '-' + Math.random().toString(36).slice(2, 6)
 

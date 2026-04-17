@@ -36,7 +36,7 @@ export default function RedeemButton({ cardId }: { cardId: string }) {
     setRedeeming(false)
     if (res.ok) {
       toast.success('Reward redeemed! Enjoy 🎉')
-      router.push('/')
+      router.push('/wallet')
       router.refresh()
     } else {
       toast.error(data.error ?? 'Redemption failed')

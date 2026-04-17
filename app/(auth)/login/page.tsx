@@ -1,57 +1,66 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
+import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 type Tab = 'customer' | 'business'
 type Step = 'input' | 'otp' | 'sent'
 
 export default function LoginPage() {
-  const [tab, setTab] = useState<Tab>('customer')
+  return (
+    <Suspense fallback={null}>
+      <LoginInner />
+    </Suspense>
+  )
+}
+
+function LoginInner() {
+  const params = useSearchParams()
+  const initialTab: Tab = params.get('role') === 'business' ? 'business' : 'customer'
+
+  const [tab, setTab] = useState<Tab>(initialTab)
   const [step, setStep] = useState<Step>('input')
 
-  // Customer (phone) state
   const [phone, setPhone] = useState('')
   const [otp, setOtp] = useState('')
-
-  // Business (email) state
   const [email, setEmail] = useState('')
 
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
-  // ─── Format phone number as user types ─────────────────────────────────────
+  useEffect(() => {
+    if (params.get('error') === 'auth') {
+      toast.error('That sign-in link expired. Try again.')
+    }
+  }, [params])
+
   function formatPhone(raw: string) {
     const digits = raw.replace(/\D/g, '').slice(0, 10)
     if (digits.length <= 3) return digits
     if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`
     return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`
   }
-
   function e164(formatted: string) {
-    const digits = formatted.replace(/\D/g, '')
-    return `+1${digits}`
+    return `+1${formatted.replace(/\D/g, '')}`
   }
 
-  // ─── Customer: send SMS OTP ─────────────────────────────────────────────────
   async function handleSendSms(e: React.FormEvent) {
     e.preventDefault()
-    const digits = phone.replace(/\D/g, '')
-    if (digits.length < 10) { toast.error('Enter a valid 10-digit number'); return }
+    if (phone.replace(/\D/g, '').length < 10) {
+      toast.error('Enter a valid 10-digit number')
+      return
+    }
     setLoading(true)
     const { error } = await supabase.auth.signInWithOtp({ phone: e164(phone) })
     setLoading(false)
-    if (error) {
-      toast.error(error.message)
-    } else {
-      setStep('otp')
-    }
+    if (error) toast.error(error.message)
+    else setStep('otp')
   }
 
-  // ─── Customer: verify SMS OTP ───────────────────────────────────────────────
   async function handleVerifySms(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
@@ -61,15 +70,13 @@ export default function LoginPage() {
       type: 'sms',
     })
     setLoading(false)
-    if (error) {
-      toast.error('Wrong code — check your SMS and try again.')
-    } else {
+    if (error) toast.error('Wrong code — check your SMS and try again.')
+    else {
       router.push('/wallet')
       router.refresh()
     }
   }
 
-  // ─── Business: send magic link ──────────────────────────────────────────────
   async function handleSendEmail(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
@@ -81,193 +88,201 @@ export default function LoginPage() {
       },
     })
     setLoading(false)
-    if (error) {
-      toast.error(error.message)
-    } else {
-      setStep('sent')
-    }
+    if (error) toast.error(error.message)
+    else setStep('sent')
+  }
+
+  function switchTab(t: Tab) {
+    setTab(t)
+    setStep('input')
+    setOtp('')
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8] flex items-center justify-center p-4">
-      <div className="w-full max-w-sm">
+    <div className="min-h-screen bg-[#FAFAF8] flex flex-col">
+      {/* Top bar */}
+      <header className="px-5 h-14 flex items-center justify-between border-b border-[#1a1a1a]/10">
+        <Link href="/" className="flex items-center gap-2 font-bold" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
+          <span className="inline-flex items-center justify-center w-7 h-7 bg-[#FFE566] rounded-md text-sm">🥊</span>
+          LocalPunch
+        </Link>
+        <Link href="/" className="text-sm text-[#6B7280] hover:text-[#1a1a1a]">← Home</Link>
+      </header>
 
-        {/* Brand */}
-        <div className="mb-8 text-center">
-          <div
-            className="inline-flex items-center justify-center w-16 h-16 bg-[#FFE566] border-2 border-[#1a1a1a] rounded-xl mb-4"
-            style={{ boxShadow: '3px 3px 0 #1a1a1a' }}
-          >
-            <span className="text-2xl">🥊</span>
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
-            LocalPunch
-          </h1>
-          <p className="text-[#6B7280] mt-1 text-sm">Digital punch cards for local businesses</p>
-        </div>
-
-        {/* Tab switcher */}
-        <div className="flex mb-5 border-2 border-[#1a1a1a] rounded-xl overflow-hidden" style={{ boxShadow: '3px 3px 0 #1a1a1a' }}>
-          <button
-            onClick={() => { setTab('customer'); setStep('input'); setOtp('') }}
-            className={`flex-1 py-2.5 text-sm font-semibold transition-colors ${
-              tab === 'customer' ? 'bg-[#FFE566] text-[#1a1a1a]' : 'bg-white text-[#6B7280]'
-            }`}
-          >
-            I'm a Customer
-          </button>
-          <button
-            onClick={() => { setTab('business'); setStep('input') }}
-            className={`flex-1 py-2.5 text-sm font-semibold transition-colors border-l-2 border-[#1a1a1a] ${
-              tab === 'business' ? 'bg-[#1a1a1a] text-white' : 'bg-white text-[#6B7280]'
-            }`}
-          >
-            I'm a Business
-          </button>
-        </div>
-
-        {/* ── CUSTOMER FLOW ─────────────────────────────────────────────────── */}
-        {tab === 'customer' && step === 'input' && (
-          <div className="nb-card-flat p-6">
-            <h2 className="text-lg font-semibold mb-1" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
-              Enter your phone number
-            </h2>
-            <p className="text-sm text-[#6B7280] mb-5">
-              We'll text you a one-time code. No password, no fuss.
+      <main className="flex-1 flex items-center justify-center p-5">
+        <div className="w-full max-w-sm">
+          <div className="text-center mb-7">
+            <h1
+              className="text-2xl font-bold tracking-tight"
+              style={{ fontFamily: 'var(--font-space-grotesk)' }}
+            >
+              {tab === 'customer' ? 'Welcome back' : 'Sign in to your business'}
+            </h1>
+            <p className="text-[#6B7280] mt-1.5 text-sm">
+              {tab === 'customer'
+                ? 'Pull up your loyalty cards in seconds.'
+                : 'Manage your loyalty programs and customers.'}
             </p>
-            <form onSubmit={handleSendSms} className="space-y-4">
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium mb-1.5">
-                  Mobile number
-                </label>
-                <div className="flex gap-2">
-                  <span className="border-2 border-[#1a1a1a] rounded-lg px-3 py-2.5 text-sm bg-[#f5f5f0] font-mono select-none">
-                    🇺🇸 +1
-                  </span>
+          </div>
+
+          {/* Tab switcher (light pill) */}
+          <div className="flex p-1 mb-5 bg-white border border-[#E5E7EB] rounded-full">
+            <button
+              onClick={() => switchTab('customer')}
+              className={`flex-1 py-2 text-sm font-medium rounded-full transition-colors ${
+                tab === 'customer' ? 'bg-[#1a1a1a] text-white' : 'text-[#6B7280] hover:text-[#1a1a1a]'
+              }`}
+            >
+              I&rsquo;m a customer
+            </button>
+            <button
+              onClick={() => switchTab('business')}
+              className={`flex-1 py-2 text-sm font-medium rounded-full transition-colors ${
+                tab === 'business' ? 'bg-[#1a1a1a] text-white' : 'text-[#6B7280] hover:text-[#1a1a1a]'
+              }`}
+            >
+              I&rsquo;m a business
+            </button>
+          </div>
+
+          {/* Card */}
+          <div className="bg-white rounded-2xl border border-[#E5E7EB] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
+            {tab === 'customer' && step === 'input' && (
+              <form onSubmit={handleSendSms} className="space-y-4">
+                <div>
+                  <label htmlFor="phone" className="block text-sm font-medium mb-1.5">
+                    Mobile number
+                  </label>
+                  <div className="flex">
+                    <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-[#E5E7EB] bg-[#FAFAF8] text-sm text-[#6B7280] font-mono">
+                      +1
+                    </span>
+                    <input
+                      id="phone"
+                      type="tel"
+                      required
+                      autoFocus
+                      inputMode="numeric"
+                      value={phone}
+                      onChange={e => setPhone(formatPhone(e.target.value))}
+                      placeholder="(555) 000-0000"
+                      className="flex-1 border border-[#E5E7EB] rounded-r-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#FFE566] focus:border-[#1a1a1a]"
+                    />
+                  </div>
+                  <p className="text-xs text-[#9CA3AF] mt-2">
+                    We&rsquo;ll text you a 6-digit code. No password needed.
+                  </p>
+                </div>
+                <button
+                  type="submit"
+                  disabled={loading || phone.replace(/\D/g, '').length < 10}
+                  className="w-full bg-[#1a1a1a] text-white rounded-full py-3 text-sm font-semibold disabled:opacity-40 hover:bg-black transition"
+                >
+                  {loading ? 'Sending…' : 'Text me a code'}
+                </button>
+              </form>
+            )}
+
+            {tab === 'customer' && step === 'otp' && (
+              <form onSubmit={handleVerifySms} className="space-y-4">
+                <div>
+                  <p className="text-sm text-[#6B7280] mb-3">
+                    Code sent to <strong className="text-[#1a1a1a]">+1 {phone}</strong>
+                  </p>
+                  <label htmlFor="otp" className="block text-sm font-medium mb-1.5">
+                    6-digit code
+                  </label>
                   <input
-                    id="phone"
-                    type="tel"
+                    id="otp"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="\d{6}"
+                    maxLength={6}
                     required
                     autoFocus
-                    inputMode="numeric"
-                    value={phone}
-                    onChange={e => setPhone(formatPhone(e.target.value))}
-                    placeholder="(555) 000-0000"
-                    className="flex-1 border-2 border-[#1a1a1a] rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#FFE566]"
+                    value={otp}
+                    onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
+                    placeholder="000000"
+                    className="w-full border border-[#E5E7EB] rounded-lg px-3 py-3 text-2xl text-center tracking-[0.4em] font-mono bg-white focus:outline-none focus:ring-2 focus:ring-[#FFE566] focus:border-[#1a1a1a]"
                   />
                 </div>
+                <button
+                  type="submit"
+                  disabled={loading || otp.length < 6}
+                  className="w-full bg-[#1a1a1a] text-white rounded-full py-3 text-sm font-semibold disabled:opacity-40 hover:bg-black transition"
+                >
+                  {loading ? 'Verifying…' : 'Confirm'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setStep('input'); setOtp('') }}
+                  className="w-full text-center text-sm text-[#6B7280] hover:text-[#1a1a1a]"
+                >
+                  ← Use a different number
+                </button>
+              </form>
+            )}
+
+            {tab === 'business' && step === 'input' && (
+              <form onSubmit={handleSendEmail} className="space-y-4">
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium mb-1.5">
+                    Business email
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    required
+                    autoFocus
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    placeholder="you@yourshop.com"
+                    className="w-full border border-[#E5E7EB] rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#FFE566] focus:border-[#1a1a1a]"
+                  />
+                  <p className="text-xs text-[#9CA3AF] mt-2">
+                    We&rsquo;ll send you a one-tap sign-in link. New here? You&rsquo;ll set up your shop next.
+                  </p>
+                </div>
+                <button
+                  type="submit"
+                  disabled={loading || !email.includes('@')}
+                  className="w-full bg-[#1a1a1a] text-white rounded-full py-3 text-sm font-semibold disabled:opacity-40 hover:bg-black transition"
+                >
+                  {loading ? 'Sending…' : 'Email me a sign-in link'}
+                </button>
+              </form>
+            )}
+
+            {tab === 'business' && step === 'sent' && (
+              <div className="text-center py-2">
+                <div className="text-3xl mb-3">📬</div>
+                <p
+                  className="font-semibold mb-1"
+                  style={{ fontFamily: 'var(--font-space-grotesk)' }}
+                >
+                  Check your inbox
+                </p>
+                <p className="text-sm text-[#6B7280]">
+                  Sent a sign-in link to <strong className="text-[#1a1a1a]">{email}</strong>.
+                </p>
+                <p className="text-xs text-[#9CA3AF] mt-3">No email? Check spam.</p>
+                <button
+                  onClick={() => setStep('input')}
+                  className="mt-5 text-sm text-[#6B7280] hover:text-[#1a1a1a]"
+                >
+                  ← Use a different email
+                </button>
               </div>
-              <button
-                type="submit"
-                disabled={loading || phone.replace(/\D/g, '').length < 10}
-                className="nb-btn-primary w-full text-sm font-semibold py-2.5 disabled:opacity-50"
-              >
-                {loading ? 'Sending…' : 'Text me a code →'}
-              </button>
-            </form>
+            )}
           </div>
-        )}
 
-        {tab === 'customer' && step === 'otp' && (
-          <div className="nb-card-flat p-6">
-            <h2 className="text-lg font-semibold mb-1" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
-              Enter your code
-            </h2>
-            <p className="text-sm text-[#6B7280] mb-5">
-              Sent to <strong>+1 {phone}</strong>
-            </p>
-            <form onSubmit={handleVerifySms} className="space-y-4">
-              <div>
-                <label htmlFor="otp" className="block text-sm font-medium mb-1.5">
-                  6-digit code
-                </label>
-                <input
-                  id="otp"
-                  type="text"
-                  inputMode="numeric"
-                  pattern="\d{6}"
-                  maxLength={6}
-                  required
-                  autoFocus
-                  value={otp}
-                  onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
-                  placeholder="123456"
-                  className="w-full border-2 border-[#1a1a1a] rounded-lg px-3 py-2.5 text-sm bg-white text-center text-2xl tracking-[0.5em] font-mono focus:outline-none focus:ring-2 focus:ring-[#FFE566]"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={loading || otp.length < 6}
-                className="nb-btn-primary w-full text-sm font-semibold py-2.5 disabled:opacity-50"
-              >
-                {loading ? 'Verifying…' : 'Confirm →'}
-              </button>
-            </form>
-            <button
-              onClick={() => { setStep('input'); setOtp('') }}
-              className="mt-4 w-full text-center text-sm text-[#6B7280] underline underline-offset-2"
-            >
-              ← Try a different number
-            </button>
-          </div>
-        )}
-
-        {/* ── BUSINESS FLOW ─────────────────────────────────────────────────── */}
-        {tab === 'business' && step === 'input' && (
-          <div className="nb-card-flat p-6">
-            <h2 className="text-lg font-semibold mb-1" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
-              Sign in
-            </h2>
-            <p className="text-sm text-[#6B7280] mb-5">
-              Enter your email — we'll send you a sign-in link.
-            </p>
-            <form onSubmit={handleSendEmail} className="space-y-4">
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium mb-1.5">
-                  Email address
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  required
-                  autoFocus
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder="you@yourbusiness.com"
-                  className="w-full border-2 border-[#1a1a1a] rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#FFE566]"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="nb-btn-dark w-full text-sm font-semibold py-2.5 disabled:opacity-50"
-              >
-                {loading ? 'Sending…' : 'Send sign-in link →'}
-              </button>
-            </form>
-          </div>
-        )}
-
-        {tab === 'business' && step === 'sent' && (
-          <div className="nb-card-flat p-6 text-center">
-            <div className="text-4xl mb-4">📬</div>
-            <h2 className="text-lg font-semibold mb-2" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
-              Check your inbox
-            </h2>
-            <p className="text-sm text-[#6B7280] mb-4">
-              Sent a sign-in link to <strong>{email}</strong>. Click it to continue.
-            </p>
-            <p className="text-xs text-[#9CA3AF]">No email? Check spam.</p>
-            <button
-              onClick={() => setStep('input')}
-              className="mt-5 w-full text-center text-sm text-[#6B7280] underline underline-offset-2"
-            >
-              ← Use a different email
-            </button>
-          </div>
-        )}
-
-      </div>
+          <p className="text-center text-xs text-[#9CA3AF] mt-6 max-w-xs mx-auto">
+            By continuing, you agree to our{' '}
+            <Link href="/terms" className="underline hover:text-[#1a1a1a]">Terms</Link> and{' '}
+            <Link href="/privacy-policy" className="underline hover:text-[#1a1a1a]">Privacy Policy</Link>.
+          </p>
+        </div>
+      </main>
     </div>
   )
 }

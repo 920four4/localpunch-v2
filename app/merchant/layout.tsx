@@ -106,7 +106,7 @@ function SignOutButton() {
   const supabase = createClient()
   return (
     <button
-      onClick={async () => { await supabase.auth.signOut(); window.location.href = '/auth/login' }}
+      onClick={async () => { await supabase.auth.signOut(); window.location.href = '/login' }}
       className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-[#6B7280] hover:bg-[#F4F4F0] hover:text-[#1a1a1a] w-full"
     >
       🚪 Sign out
