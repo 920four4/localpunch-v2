@@ -45,13 +45,17 @@ export async function proxy(request: NextRequest) {
   const redirect = (url: URL) =>
     forwardAuthCookies(supabaseResponse, NextResponse.redirect(url))
 
-  // Public routes — landing, login, onboard, legal, assets
+  // Public routes — landing, login, onboard, blog, SEO, legal, assets
   const isPublic =
     pathname === '/' ||
     pathname === '/login' ||
     pathname === '/onboard' ||
     pathname.startsWith('/auth/') ||
     pathname.startsWith('/api/') ||
+    pathname.startsWith('/blog') ||
+    pathname === '/llms.txt' ||
+    pathname === '/robots.txt' ||
+    pathname === '/sitemap.xml' ||
     pathname === '/favicon.ico' ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/manifest') ||

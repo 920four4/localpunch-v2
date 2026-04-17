@@ -29,6 +29,9 @@ function Header() {
           LocalPunch
         </Link>
         <nav className="flex items-center gap-2 sm:gap-4 text-sm">
+          <Link href="/blog" className="hidden sm:inline text-[#6B7280] hover:text-[#1a1a1a] px-2 py-1.5">
+            Blog
+          </Link>
           <Link href="/login" className="text-[#6B7280] hover:text-[#1a1a1a] px-2 py-1.5">
             Sign in
           </Link>
@@ -723,6 +726,7 @@ function Footer() {
           <span className="text-[#9CA3AF]">© {new Date().getFullYear()}</span>
         </div>
         <div className="flex items-center gap-5">
+          <Link href="/blog" className="hover:text-[#1a1a1a]">Blog</Link>
           <Link href="/privacy-policy" className="hover:text-[#1a1a1a]">Privacy</Link>
           <Link href="/terms" className="hover:text-[#1a1a1a]">Terms</Link>
           <Link href="/login" className="hover:text-[#1a1a1a]">Sign in</Link>
