@@ -66,6 +66,15 @@ export interface QrTokenPayload {
   exp: number
 }
 
+export interface RedeemTokenPayload {
+  card_id: string
+  // Present only on SMS-confirm tokens: binds the redemption to the merchant
+  // who initiated it, so the customer's tap can't be used by anyone else.
+  merchant_id?: string
+  iat: number
+  exp: number
+}
+
 export interface PunchResult {
   success: boolean
   punch_count: number

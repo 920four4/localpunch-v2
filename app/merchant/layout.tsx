@@ -10,6 +10,7 @@ const navItems = [
   { href: '/merchant/programs', icon: '🎯', label: 'Programs' },
   { href: '/merchant/qr', icon: '📱', label: 'Show QR' },
   { href: '/merchant/punch', icon: '⚡', label: 'Quick Punch' },
+  { href: '/merchant/redeem', icon: '🎁', label: 'Redeem' },
   { href: '/merchant/customers', icon: '👥', label: 'Customers' },
   { href: '/merchant/analytics', icon: '📈', label: 'Analytics' },
   { href: '/merchant/billing', icon: '💳', label: 'Billing' },
