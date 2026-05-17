@@ -1,4 +1,11 @@
 import Link from 'next/link'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'LocalPunch — Digital Punch Cards That Bring Regulars Back',
+  description:
+    'Replace lost paper punch cards with a digital loyalty program your customers can’t lose. No hardware, no app downloads, set up in two minutes. $60/mo or $600/yr.',
+}
 
 export default function LandingPage() {
   return (
@@ -7,9 +14,11 @@ export default function LandingPage() {
 
       <main>
         <Hero />
+        <PainPoints />
         <InStoreDemo />
         <SetupSteps />
         <ForBusinesses />
+        <SocialProof />
         <Pricing />
         <FAQ />
         <FinalCTA />
@@ -20,26 +29,45 @@ export default function LandingPage() {
   )
 }
 
+/* ─────────────────────────────────────────────────────────────
+   Header
+   ──────────────────────────────────────────────────────────── */
+
 function Header() {
   return (
-    <header className="sticky top-0 z-20 backdrop-blur bg-[#FAFAF8]/80 border-b border-[#1a1a1a]/10">
-      <div className="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 font-bold" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
-          <span className="inline-flex items-center justify-center w-7 h-7 bg-[#FFE566] rounded-md text-sm">🥊</span>
+    <header className="sticky top-0 z-20 backdrop-blur bg-[#FAFAF8]/85 border-b-2 border-[#1a1a1a]">
+      <div className="max-w-6xl mx-auto px-5 h-15 py-2.5 flex items-center justify-between">
+        <Link
+          href="/"
+          className="flex items-center gap-2 font-bold text-lg"
+          style={{ fontFamily: 'var(--font-space-grotesk)' }}
+        >
+          <span className="inline-flex items-center justify-center w-8 h-8 bg-[#FFE566] border-2 border-[#1a1a1a] rounded-md text-sm shadow-[2px_2px_0_#1a1a1a]">
+            🥊
+          </span>
           LocalPunch
         </Link>
-        <nav className="flex items-center gap-2 sm:gap-4 text-sm">
-          <Link href="/blog" className="hidden sm:inline text-[#6B7280] hover:text-[#1a1a1a] px-2 py-1.5">
-            Blog
-          </Link>
-          <Link href="/login" className="text-[#6B7280] hover:text-[#1a1a1a] px-2 py-1.5">
-            Sign in
+        <nav className="flex items-center gap-1 sm:gap-3 text-sm">
+          <Link
+            href="#pricing"
+            className="hidden sm:inline text-[#4B5563] hover:text-[#1a1a1a] px-2 py-1.5 font-medium"
+          >
+            Pricing
           </Link>
           <Link
-            href="/login?role=business"
-            className="bg-[#1a1a1a] text-white rounded-full px-4 py-1.5 font-medium hover:bg-black"
+            href="/blog"
+            className="hidden sm:inline text-[#4B5563] hover:text-[#1a1a1a] px-2 py-1.5 font-medium"
           >
-            Get started
+            Blog
+          </Link>
+          <Link
+            href="/login"
+            className="text-[#4B5563] hover:text-[#1a1a1a] px-2 py-1.5 font-medium"
+          >
+            Sign in
+          </Link>
+          <Link href="/login?role=business" className="nb-btn-dark text-sm px-4 py-2">
+            Start free →
           </Link>
         </nav>
       </div>
@@ -47,75 +75,101 @@ function Header() {
   )
 }
 
+/* ─────────────────────────────────────────────────────────────
+   Hero — strong value prop + the real product front and center
+   ──────────────────────────────────────────────────────────── */
+
 function Hero() {
   return (
-    <section className="px-5 py-16 sm:py-24">
-      <div className="max-w-3xl mx-auto text-center">
-        <span className="inline-block text-xs font-medium text-[#6B7280] tracking-widest uppercase mb-5">
-          For local businesses
-        </span>
-        <h1
-          className="text-4xl sm:text-6xl font-bold tracking-tight leading-[1.05]"
-          style={{ fontFamily: 'var(--font-space-grotesk)' }}
-        >
-          Punch cards, <span className="bg-[#FFE566] px-2 rounded">without the paper.</span>
-        </h1>
-        <p className="mt-6 text-lg text-[#4B5563] max-w-xl mx-auto leading-relaxed">
-          Reward your regulars with a digital loyalty card they can&rsquo;t lose.
-          Set up your shop in two minutes — no hardware, no app downloads.
-        </p>
+    <section className="px-5 pt-14 pb-16 sm:pt-20 sm:pb-24">
+      <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-10 items-center">
+        {/* Copy */}
+        <div className="text-center lg:text-left">
+          <span className="inline-block text-xs font-bold text-[#1a1a1a] bg-[#A8E6CF] border-2 border-[#1a1a1a] px-3 py-1 rounded-full tracking-wide uppercase mb-6 shadow-[2px_2px_0_#1a1a1a]">
+            Loyalty for local businesses
+          </span>
+          <h1
+            className="text-4xl sm:text-5xl lg:text-[3.5rem] font-bold tracking-tight leading-[1.04]"
+            style={{ fontFamily: 'var(--font-space-grotesk)' }}
+          >
+            Your regulars forget the card.
+            <br />
+            <span className="bg-[#FFE566] box-decoration-clone px-2 rounded">
+              They never forget their phone.
+            </span>
+          </h1>
+          <p className="mt-6 text-lg text-[#4B5563] max-w-xl mx-auto lg:mx-0 leading-relaxed">
+            LocalPunch turns the paper punch card you keep reprinting into a digital
+            one your customers can&rsquo;t lose &mdash; and finally shows you who&rsquo;s
+            actually coming back. No hardware. No app downloads. Live in two minutes.
+          </p>
 
-        <div className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-3">
-          <Link
-            href="/login?role=business"
-            className="w-full sm:w-auto bg-[#1a1a1a] text-white rounded-full px-6 py-3 font-semibold hover:bg-black transition"
-          >
-            Set up my business
-          </Link>
-          <Link
-            href="#pricing"
-            className="w-full sm:w-auto text-[#1a1a1a] rounded-full px-6 py-3 font-medium hover:bg-[#1a1a1a]/5 transition"
-          >
-            See pricing →
-          </Link>
+          <div className="mt-8 flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3">
+            <Link
+              href="/login?role=business"
+              className="nb-btn-primary w-full sm:w-auto text-base font-semibold px-7 py-3.5"
+            >
+              Set up my shop &mdash; free
+            </Link>
+            <Link
+              href="#how-it-works"
+              className="nb-btn-ghost w-full sm:w-auto text-base font-medium px-7 py-3.5"
+            >
+              See how it works
+            </Link>
+          </div>
+
+          <p className="mt-5 text-xs text-[#6B7280]">
+            Free to sign up and set up &middot; You only pay when you go live &middot;
+            Cancel anytime
+          </p>
         </div>
 
-        <p className="mt-5 text-xs text-[#9CA3AF]">
-          $60/month or $600/year · Free to set up · Cancel anytime
-        </p>
-      </div>
-
-      {/* Card preview */}
-      <div className="max-w-md mx-auto mt-14">
-        <div className="rounded-2xl bg-white border border-[#E5E7EB] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.06)]">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <p className="text-xs text-[#9CA3AF] font-medium uppercase tracking-wider">Tony&rsquo;s Tacos</p>
-              <p className="font-semibold mt-0.5" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
-                🌮 Free Taco Tuesday
-              </p>
-            </div>
-            <span className="text-xs font-semibold bg-[#A8E6CF] text-[#1a1a1a] px-2 py-1 rounded-full">
-              7/10
+        {/* Card preview */}
+        <div className="relative mx-auto w-full max-w-md">
+          <div className="absolute -top-3 -right-2 z-10 hidden sm:block rotate-6">
+            <span className="inline-block text-xs font-bold bg-[#FF6B6B] text-white border-2 border-[#1a1a1a] px-3 py-1.5 rounded-full shadow-[2px_2px_0_#1a1a1a]">
+              No app to install
             </span>
           </div>
-          <div className="grid grid-cols-5 gap-2">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <div
-                key={i}
-                className={`aspect-square rounded-full border-2 flex items-center justify-center text-sm font-bold transition ${
-                  i < 7
-                    ? 'bg-[#FFE566] border-[#1a1a1a] text-[#1a1a1a]'
-                    : 'bg-[#F9FAFB] border-[#E5E7EB] text-[#D1D5DB]'
-                }`}
-              >
-                {i < 7 ? '✓' : i + 1}
+          <div className="nb-card-flat p-6 bg-white">
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <p className="text-xs text-[#6B7280] font-semibold uppercase tracking-wider">
+                  Tony&rsquo;s Tacos
+                </p>
+                <p
+                  className="font-bold text-lg mt-0.5"
+                  style={{ fontFamily: 'var(--font-space-grotesk)' }}
+                >
+                  🌮 Free Taco Tuesday
+                </p>
               </div>
-            ))}
+              <span className="text-xs font-bold bg-[#A8E6CF] text-[#1a1a1a] border-2 border-[#1a1a1a] px-2.5 py-1 rounded-full">
+                7/10
+              </span>
+            </div>
+            <div className="grid grid-cols-5 gap-2.5">
+              {Array.from({ length: 10 }).map((_, i) => (
+                <div
+                  key={i}
+                  className={`aspect-square rounded-full border-2 border-[#1a1a1a] flex items-center justify-center text-sm font-bold ${
+                    i < 7
+                      ? 'bg-[#FFE566] text-[#1a1a1a]'
+                      : 'bg-[#F9FAFB] text-[#D1D5DB] border-[#D1D5DB]'
+                  }`}
+                >
+                  {i < 7 ? '✓' : i + 1}
+                </div>
+              ))}
+            </div>
+            <div className="mt-5 pt-4 border-t-2 border-dashed border-[#E5E7EB]">
+              <p className="text-sm text-[#4B5563] text-center font-medium">
+                3 more punches &rarr;{' '}
+                <span className="font-bold text-[#1a1a1a]">1 free taco</span>
+              </p>
+            </div>
           </div>
-          <p className="text-xs text-[#6B7280] mt-4 text-center">
-            3 more punches → 1 free taco of your choice
-          </p>
         </div>
       </div>
     </section>
@@ -123,32 +177,90 @@ function Hero() {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   In-store demo: show the actual flow in plain language,
-   with both the customer phone and your merchant view visible.
+   Pain points — name the problem before selling the fix
    ──────────────────────────────────────────────────────────── */
 
-function InStoreDemo() {
+function PainPoints() {
+  const pains = [
+    {
+      icon: '🗑️',
+      bad: 'Paper cards get lost.',
+      good: 'Customers lose the card, lose the streak, and stop coming back. A digital card lives on their phone — it never ends up in the wash.',
+    },
+    {
+      icon: '👻',
+      bad: 'You have no idea who your regulars are.',
+      good: 'A stack of stamped cards tells you nothing. LocalPunch shows you customers, repeat visits, and redemptions in plain numbers.',
+    },
+    {
+      icon: '✏️',
+      bad: 'Anyone can draw a stamp.',
+      good: 'A pen and a photocopier defeat a paper card. Our QR rotates every few minutes and counts one punch per customer, per day.',
+    },
+  ]
   return (
-    <section className="px-5 py-16 sm:py-20 bg-white border-y border-[#1a1a1a]/10">
-      <div className="max-w-6xl mx-auto">
+    <section className="px-5 py-16 sm:py-20 bg-white border-y-2 border-[#1a1a1a]">
+      <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12">
-          <span className="inline-block text-xs font-medium text-[#6B7280] tracking-widest uppercase mb-3">
-            A Tuesday at Tony&rsquo;s Tacos
+          <span className="inline-block text-xs font-bold text-[#6B7280] tracking-widest uppercase mb-3">
+            The problem with paper
           </span>
           <h2
             className="text-3xl sm:text-4xl font-bold tracking-tight"
             style={{ fontFamily: 'var(--font-space-grotesk)' }}
           >
-            Here&rsquo;s what it looks like at your counter.
+            Punch cards work. The paper doesn&rsquo;t.
           </h2>
-          <p className="text-[#6B7280] mt-4 max-w-xl mx-auto leading-relaxed">
-            Maria is one of your regulars. She signed up last week by scanning the QR on your
-            counter. Today is her 7th visit. Watch how her 7th punch happens, start to finish.
+          <p className="text-[#4B5563] mt-3 max-w-xl mx-auto leading-relaxed">
+            Loyalty cards bring people back &mdash; that&rsquo;s why every café has
+            them. The cardboard is the part that keeps failing you.
+          </p>
+        </div>
+        <div className="grid sm:grid-cols-3 gap-5">
+          {pains.map(p => (
+            <div key={p.bad} className="nb-card-flat p-6 bg-[#FAFAF8]">
+              <div className="text-3xl mb-4">{p.icon}</div>
+              <p
+                className="font-bold text-lg mb-2"
+                style={{ fontFamily: 'var(--font-space-grotesk)' }}
+              >
+                {p.bad}
+              </p>
+              <p className="text-sm text-[#4B5563] leading-relaxed">{p.good}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ─────────────────────────────────────────────────────────────
+   In-store demo — the actual flow, both sides of the counter
+   ──────────────────────────────────────────────────────────── */
+
+function InStoreDemo() {
+  return (
+    <section id="how-it-works" className="px-5 py-16 sm:py-20">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-12">
+          <span className="inline-block text-xs font-bold text-[#6B7280] tracking-widest uppercase mb-3">
+            How it works
+          </span>
+          <h2
+            className="text-3xl sm:text-4xl font-bold tracking-tight"
+            style={{ fontFamily: 'var(--font-space-grotesk)' }}
+          >
+            Here&rsquo;s a Tuesday at your counter.
+          </h2>
+          <p className="text-[#4B5563] mt-4 max-w-xl mx-auto leading-relaxed">
+            Maria is a regular. She joined last week by scanning the QR on your
+            counter &mdash; no app, no signup form. This is her 7th punch, start to
+            finish.
           </p>
         </div>
 
         <div className="grid gap-8 lg:grid-cols-3">
-          {/* Scene 1 — she shows her phone */}
           <Scene
             n="1"
             label="What Maria sees"
@@ -158,37 +270,35 @@ function InStoreDemo() {
             <CustomerPhone punches={6} headline="Hi Maria 👋" />
           </Scene>
 
-          {/* Scene 2 — you add a punch */}
           <Scene
             n="2"
-            label="What you see on your tablet"
+            label="What you see on your phone"
             title="You tap one button."
-            body="Your merchant view shows who it is and their current progress. One big button. One tap. Under two seconds."
+            body="Your merchant screen shows who it is and where they're at. One big button. One tap. Under two seconds, even at a lunch rush."
             accent
           >
             <MerchantPhone />
           </Scene>
 
-          {/* Scene 3 — her card updates */}
           <Scene
             n="3"
             label="What Maria sees"
-            title="Her card fills up. Instantly."
-            body="Her phone updates on the spot. At 10 punches, a ‘Redeem free taco’ button appears. You tap ‘Redeem’ together and she walks out happy."
+            title="Her card fills up instantly."
+            body="Her phone updates on the spot. At 10 punches a 'Redeem' button appears, you tap it together, and she walks out a regular who'll be back."
           >
             <CustomerPhone punches={7} highlight={7} headline="+1 punch 🎉" />
           </Scene>
         </div>
 
-        {/* footer strip under scenes */}
-        <div className="mt-12 rounded-2xl border border-[#1a1a1a]/10 bg-[#FAFAF8] p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <div className="mt-10 nb-card-flat bg-[#FFE566] p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <div className="flex items-center gap-3 text-sm">
-            <span className="inline-flex w-9 h-9 items-center justify-center rounded-full bg-[#FFE566] text-lg">
+            <span className="inline-flex w-10 h-10 items-center justify-center rounded-full bg-white border-2 border-[#1a1a1a] text-lg shrink-0">
               💬
             </span>
-            <p className="text-[#4B5563]">
-              <span className="font-semibold text-[#1a1a1a]">Forgot their phone?</span>{' '}
-              Punch it by their phone number. They&rsquo;ll see it next time they open their card.
+            <p className="text-[#1a1a1a]">
+              <span className="font-bold">Customer forgot their phone?</span> Punch it
+              by their phone number from your merchant screen. They&rsquo;ll see it the
+              next time they open their card.
             </p>
           </div>
         </div>
@@ -214,13 +324,13 @@ function Scene({
 }) {
   return (
     <div
-      className={`rounded-2xl p-6 sm:p-7 border ${
-        accent ? 'bg-[#1a1a1a] text-white border-[#1a1a1a]' : 'bg-[#FAFAF8] border-[#E5E7EB]'
+      className={`nb-card-flat p-6 sm:p-7 ${
+        accent ? 'bg-[#1a1a1a] text-white' : 'bg-white'
       }`}
     >
       <div className="flex items-center gap-3 mb-5">
         <span
-          className={`inline-flex items-center justify-center w-9 h-9 rounded-full font-bold ${
+          className={`inline-flex items-center justify-center w-9 h-9 rounded-full font-bold border-2 border-[#1a1a1a] ${
             accent ? 'bg-[#FFE566] text-[#1a1a1a]' : 'bg-[#1a1a1a] text-white'
           }`}
           style={{ fontFamily: 'var(--font-space-grotesk)' }}
@@ -228,7 +338,7 @@ function Scene({
           {n}
         </span>
         <p
-          className={`text-[11px] uppercase tracking-widest font-semibold ${
+          className={`text-[11px] uppercase tracking-widest font-bold ${
             accent ? 'text-[#FFE566]' : 'text-[#6B7280]'
           }`}
         >
@@ -245,7 +355,7 @@ function Scene({
         {title}
       </h3>
       <p
-        className={`text-sm leading-relaxed ${accent ? 'text-white/75' : 'text-[#6B7280]'}`}
+        className={`text-sm leading-relaxed ${accent ? 'text-white/75' : 'text-[#4B5563]'}`}
       >
         {body}
       </p>
@@ -253,11 +363,16 @@ function Scene({
   )
 }
 
-/* Mini phone mockup used inside demo scenes */
-function PhoneFrame({ children, tone = 'light' }: { children: React.ReactNode; tone?: 'light' | 'dark' }) {
+function PhoneFrame({
+  children,
+  tone = 'light',
+}: {
+  children: React.ReactNode
+  tone?: 'light' | 'dark'
+}) {
   return (
     <div className="mx-auto w-full max-w-[220px]">
-      <div className="bg-[#1a1a1a] rounded-[2rem] p-1.5 shadow-[0_15px_40px_rgba(0,0,0,0.18)]">
+      <div className="bg-[#1a1a1a] rounded-[2rem] p-1.5 border-2 border-[#1a1a1a] shadow-[4px_4px_0_rgba(0,0,0,0.25)]">
         <div
           className={`rounded-[1.6rem] p-4 ${
             tone === 'dark' ? 'bg-[#FAFAF8]' : 'bg-white'
@@ -282,12 +397,12 @@ function CustomerPhone({
 }) {
   return (
     <PhoneFrame>
-      <p className="text-[10px] font-semibold text-[#6B7280] uppercase tracking-wider mb-1">
+      <p className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider mb-1">
         {headline}
       </p>
       <div className="flex items-center justify-between mb-3">
         <div>
-          <p className="text-[9px] text-[#9CA3AF] uppercase tracking-wider font-medium">
+          <p className="text-[9px] text-[#9CA3AF] uppercase tracking-wider font-semibold">
             Tony&rsquo;s Tacos
           </p>
           <p
@@ -297,7 +412,7 @@ function CustomerPhone({
             🌮 Free Taco
           </p>
         </div>
-        <span className="text-[10px] font-bold bg-[#A8E6CF] text-[#1a1a1a] px-1.5 py-0.5 rounded-full">
+        <span className="text-[10px] font-bold bg-[#A8E6CF] text-[#1a1a1a] border border-[#1a1a1a] px-1.5 py-0.5 rounded-full">
           {punches}/10
         </span>
       </div>
@@ -311,7 +426,7 @@ function CustomerPhone({
               className={`aspect-square rounded-full border flex items-center justify-center text-[10px] font-bold ${
                 filled
                   ? isNew
-                    ? 'bg-[#FFE566] border-[#1a1a1a] text-[#1a1a1a] ring-2 ring-[#1a1a1a]/20'
+                    ? 'bg-[#FFE566] border-[#1a1a1a] text-[#1a1a1a] ring-2 ring-[#1a1a1a]/25'
                     : 'bg-[#FFE566] border-[#1a1a1a] text-[#1a1a1a]'
                   : 'bg-[#F9FAFB] border-[#E5E7EB] text-[#D1D5DB]'
               }`}
@@ -322,7 +437,7 @@ function CustomerPhone({
         })}
       </div>
       <p className="text-[10px] text-[#9CA3AF] mt-3 text-center">
-        {10 - punches} more → free taco
+        {10 - punches} more &rarr; free taco
       </p>
     </PhoneFrame>
   )
@@ -331,21 +446,21 @@ function CustomerPhone({
 function MerchantPhone() {
   return (
     <PhoneFrame tone="dark">
-      <p className="text-[10px] font-semibold text-[#6B7280] uppercase tracking-wider mb-1">
+      <p className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider mb-1">
         Merchant view
       </p>
-      <p className="text-[9px] text-[#9CA3AF] uppercase tracking-wider font-medium">
+      <p className="text-[9px] text-[#9CA3AF] uppercase tracking-wider font-semibold">
         Customer
       </p>
       <p
         className="text-sm font-bold mb-3"
         style={{ fontFamily: 'var(--font-space-grotesk)' }}
       >
-        Maria · (415) ••• 0142
+        Maria &middot; (415) ••• 0142
       </p>
 
-      <div className="bg-white border border-[#E5E7EB] rounded-lg p-2.5 mb-3">
-        <p className="text-[9px] text-[#9CA3AF] uppercase tracking-wider font-medium">
+      <div className="bg-white border-2 border-[#1a1a1a] rounded-lg p-2.5 mb-3">
+        <p className="text-[9px] text-[#9CA3AF] uppercase tracking-wider font-semibold">
           Current progress
         </p>
         <p
@@ -354,118 +469,154 @@ function MerchantPhone() {
         >
           6 / 10 punches
         </p>
-        <div className="mt-1.5 h-1.5 rounded-full bg-[#F3F4F6] overflow-hidden">
+        <div className="mt-1.5 h-1.5 rounded-full bg-[#F3F4F6] overflow-hidden border border-[#1a1a1a]">
           <div className="h-full bg-[#FFE566]" style={{ width: '60%' }} />
         </div>
       </div>
 
       <button
-        className="w-full bg-[#1a1a1a] text-white text-xs font-bold py-3 rounded-lg shadow-[0_2px_0_#000] active:translate-y-[1px]"
+        type="button"
+        className="w-full bg-[#FFE566] text-[#1a1a1a] border-2 border-[#1a1a1a] text-xs font-bold py-3 rounded-lg shadow-[2px_2px_0_#1a1a1a] active:translate-y-[1px]"
         style={{ fontFamily: 'var(--font-space-grotesk)' }}
       >
         + Add a punch
       </button>
-      <p className="text-[9px] text-[#9CA3AF] mt-2 text-center">Taps once. Done.</p>
+      <p className="text-[9px] text-[#9CA3AF] mt-2 text-center">One tap. Done.</p>
     </PhoneFrame>
   )
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Setup steps: what the business owner does to get going.
+   Setup steps — what the owner does to go live
    ──────────────────────────────────────────────────────────── */
 
 function SetupSteps() {
   const steps = [
     {
       n: '1',
-      title: 'Create your card',
-      body: 'Name it, pick a reward, choose how many punches. 60 seconds.',
+      title: 'Create your reward',
+      body: 'Name the program, write the reward, pick how many punches (1–100). About 60 seconds.',
     },
     {
       n: '2',
-      title: 'Print the QR',
-      body: 'We give you a QR poster. Tape it to your counter or window.',
+      title: 'Put up the QR',
+      body: 'We generate a QR for your counter. Keep it open on a phone or tablet, or print it for the window.',
     },
     {
       n: '3',
       title: 'Start punching',
-      body: 'New customers scan the QR to join. Regulars show their card. You tap once.',
+      body: 'New customers scan to join. Regulars show their card, you tap once. Watch the dashboard fill in.',
     },
   ]
   return (
-    <section className="px-5 py-16">
+    <section className="px-5 py-16 sm:py-20 bg-white border-y-2 border-[#1a1a1a]">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12">
-          <span className="inline-block text-xs font-medium text-[#6B7280] tracking-widest uppercase mb-3">
+          <span className="inline-block text-xs font-bold text-[#6B7280] tracking-widest uppercase mb-3">
             Setup
           </span>
           <h2
             className="text-3xl sm:text-4xl font-bold tracking-tight"
             style={{ fontFamily: 'var(--font-space-grotesk)' }}
           >
-            You&rsquo;re running it in under 2 minutes.
+            You&rsquo;re running it in under two minutes.
           </h2>
-          <p className="text-[#6B7280] mt-3">Three things, nothing technical.</p>
+          <p className="text-[#4B5563] mt-3">Three steps. Nothing technical.</p>
         </div>
         <div className="grid sm:grid-cols-3 gap-6">
           {steps.map(s => (
-            <div key={s.n} className="text-center sm:text-left">
+            <div key={s.n} className="nb-card-flat p-6 bg-[#FAFAF8]">
               <div
-                className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-[#FFE566] font-bold text-[#1a1a1a] mb-4"
+                className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[#FFE566] border-2 border-[#1a1a1a] font-bold text-[#1a1a1a] mb-4 shadow-[2px_2px_0_#1a1a1a]"
                 style={{ fontFamily: 'var(--font-space-grotesk)' }}
               >
                 {s.n}
               </div>
               <h3
-                className="font-semibold text-lg mb-1"
+                className="font-bold text-lg mb-1.5"
                 style={{ fontFamily: 'var(--font-space-grotesk)' }}
               >
                 {s.title}
               </h3>
-              <p className="text-[#6B7280] text-sm leading-relaxed">{s.body}</p>
+              <p className="text-[#4B5563] text-sm leading-relaxed">{s.body}</p>
             </div>
           ))}
+        </div>
+        <div className="text-center mt-10">
+          <Link
+            href="/login?role=business"
+            className="nb-btn-primary text-base font-semibold px-7 py-3.5"
+          >
+            Create my first reward &rarr;
+          </Link>
         </div>
       </div>
     </section>
   )
 }
 
+/* ─────────────────────────────────────────────────────────────
+   Why owners run it this way
+   ──────────────────────────────────────────────────────────── */
+
 function ForBusinesses() {
   const features = [
-    { icon: '⚡', title: 'No hardware', body: 'Just a phone or tablet on your counter.' },
-    { icon: '📱', title: 'No customer app', body: 'They scan with their camera. That&rsquo;s it.' },
-    { icon: '🛡️', title: 'Hard to cheat', body: 'QR codes rotate. One punch per visit, per customer.' },
-    { icon: '📊', title: 'Real numbers', body: 'See active customers, redemptions, and repeat visits.' },
+    {
+      icon: '⚡',
+      title: 'No hardware to buy',
+      body: 'Any phone or tablet with a browser. Most owners just use their own phone at the counter.',
+    },
+    {
+      icon: '📱',
+      title: 'No app for customers',
+      body: 'They scan a QR with their camera and enter a phone number. Most save the card to their home screen.',
+    },
+    {
+      icon: '🛡️',
+      title: 'Hard to game',
+      body: 'The counter QR rotates every 5 minutes and counts one punch per customer per day. No screenshot fraud.',
+    },
+    {
+      icon: '📊',
+      title: 'Numbers, not a shoebox',
+      body: 'See customers, total punches, redemptions and redemption rates per program. Export the list to CSV anytime.',
+    },
+    {
+      icon: '🔁',
+      title: 'Built for repeat visits',
+      body: 'The whole point: a reward in progress is a reason to come back instead of going somewhere else.',
+    },
+    {
+      icon: '🧾',
+      title: 'One simple price',
+      body: 'Everything unlimited, billed through Stripe. Cancel anytime from your billing portal — no contract.',
+    },
   ]
   return (
-    <section className="px-5 py-16 bg-white border-y border-[#1a1a1a]/10">
+    <section className="px-5 py-16 sm:py-20">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12">
+          <span className="inline-block text-xs font-bold text-[#6B7280] tracking-widest uppercase mb-3">
+            For business owners
+          </span>
           <h2
             className="text-3xl sm:text-4xl font-bold tracking-tight"
             style={{ fontFamily: 'var(--font-space-grotesk)' }}
           >
-            Built for the way you actually run things.
+            Built for how you actually run the place.
           </h2>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {features.map(f => (
-            <div
-              key={f.title}
-              className="rounded-xl bg-[#FAFAF8] border border-[#E5E7EB] p-5 hover:border-[#1a1a1a]/30 transition"
-            >
+            <div key={f.title} className="nb-card-flat p-6 bg-white">
               <div className="text-2xl mb-3">{f.icon}</div>
               <p
-                className="font-semibold mb-1"
+                className="font-bold mb-1.5"
                 style={{ fontFamily: 'var(--font-space-grotesk)' }}
               >
                 {f.title}
               </p>
-              <p
-                className="text-sm text-[#6B7280] leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: f.body }}
-              />
+              <p className="text-sm text-[#4B5563] leading-relaxed">{f.body}</p>
             </div>
           ))}
         </div>
@@ -475,24 +626,98 @@ function ForBusinesses() {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Pricing: one flat plan, monthly or yearly. No free tier —
-   you can sign up and set up for free, activation requires payment.
+   Social proof — honest, non-fabricated framing
+   ──────────────────────────────────────────────────────────── */
+
+function SocialProof() {
+  return (
+    <section className="px-5 py-16 sm:py-20 bg-[#1a1a1a] text-white border-y-2 border-[#1a1a1a]">
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-12">
+          <span className="inline-block text-xs font-bold text-[#FFE566] tracking-widest uppercase mb-3">
+            Why loyalty works
+          </span>
+          <h2
+            className="text-3xl sm:text-4xl font-bold tracking-tight"
+            style={{ fontFamily: 'var(--font-space-grotesk)' }}
+          >
+            Regulars are cheaper than new customers.
+          </h2>
+          <p className="text-white/70 mt-4 max-w-xl mx-auto leading-relaxed">
+            You already know it from behind the counter. A punch card just makes the
+            next visit the obvious choice &mdash; LocalPunch makes sure the card is
+            always in their pocket.
+          </p>
+        </div>
+
+        <div className="grid sm:grid-cols-3 gap-5">
+          {[
+            {
+              big: '0',
+              label: 'Apps your customers download',
+              sub: 'They scan a QR and they’re in.',
+            },
+            {
+              big: '~2 min',
+              label: 'To set up and go live',
+              sub: 'One reward, one QR, done.',
+            },
+            {
+              big: '1 tap',
+              label: 'To add a punch at the counter',
+              sub: 'Even during a rush.',
+            },
+          ].map(s => (
+            <div
+              key={s.label}
+              className="rounded-lg border-2 border-white/20 bg-white/5 p-6 text-center"
+            >
+              <p
+                className="text-4xl font-bold text-[#FFE566]"
+                style={{ fontFamily: 'var(--font-space-grotesk)' }}
+              >
+                {s.big}
+              </p>
+              <p className="font-semibold mt-2">{s.label}</p>
+              <p className="text-sm text-white/60 mt-1">{s.sub}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-10 rounded-lg border-2 border-white/20 bg-white/5 p-6 sm:p-8 text-center max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl leading-relaxed">
+            &ldquo;Bring back the punch card you already had &mdash; minus the
+            reprints, minus the guesswork.&rdquo;
+          </p>
+          <p className="text-sm text-white/50 mt-4">
+            We&rsquo;re early, so we&rsquo;d rather earn your trust than borrow
+            someone else&rsquo;s logo. Be one of the first shops on board.
+          </p>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Pricing — exactly what Stripe is configured for
    ──────────────────────────────────────────────────────────── */
 
 function Pricing() {
   const features = [
-    'Unlimited loyalty cards',
-    'Unlimited customers',
-    'Unlimited punches & redemptions',
+    'Unlimited loyalty programs',
+    'Unlimited customers & punches',
     'Anti-fraud rotating QR codes',
-    'Analytics & CSV exports',
-    'Customer portal + email support',
+    'Manual punch by phone number',
+    'Analytics & redemption rates',
+    'CSV customer export',
+    'Customer card portal + email support',
   ]
   return (
-    <section id="pricing" className="px-5 py-20 bg-white border-y border-[#1a1a1a]/10">
+    <section id="pricing" className="px-5 py-16 sm:py-20 bg-white border-y-2 border-[#1a1a1a]">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-10">
-          <span className="inline-block text-xs font-medium text-[#6B7280] tracking-widest uppercase mb-3">
+          <span className="inline-block text-xs font-bold text-[#6B7280] tracking-widest uppercase mb-3">
             Pricing
           </span>
           <h2
@@ -501,8 +726,9 @@ function Pricing() {
           >
             One plan. Everything unlimited.
           </h2>
-          <p className="text-[#6B7280] mt-3 max-w-xl mx-auto">
-            Sign up and set up for free. You only pay when you&rsquo;re ready to go live.
+          <p className="text-[#4B5563] mt-3 max-w-xl mx-auto leading-relaxed">
+            Sign up and build your whole program for free. You only pay when
+            you&rsquo;re ready to flip it live for customers.
           </p>
         </div>
 
@@ -519,16 +745,17 @@ function Pricing() {
             title="Yearly"
             price="$600"
             suffix="/year"
-            subline="Billed once a year · save $120"
+            subline="Billed once a year · 2 months free"
             cta="Start yearly"
             features={features}
             highlight
-            badge="2 months free"
+            badge="Best value"
           />
         </div>
 
-        <p className="text-xs text-[#9CA3AF] text-center mt-6">
-          All prices in USD. Secure checkout via Stripe. No setup fees, no hidden costs.
+        <p className="text-xs text-[#6B7280] text-center mt-6">
+          Prices in USD. Secure checkout and billing portal via Stripe. No setup fees,
+          no hidden costs, cancel from your portal anytime.
         </p>
       </div>
     </section>
@@ -556,10 +783,8 @@ function PricingCard({
 }) {
   return (
     <div
-      className={`rounded-2xl p-7 flex flex-col ${
-        highlight
-          ? 'bg-[#1a1a1a] text-white border border-[#1a1a1a]'
-          : 'bg-[#FAFAF8] text-[#1a1a1a] border border-[#E5E7EB]'
+      className={`nb-card-flat p-7 flex flex-col ${
+        highlight ? 'bg-[#1a1a1a] text-white' : 'bg-[#FAFAF8] text-[#1a1a1a]'
       }`}
     >
       <div className="flex items-center justify-between mb-3">
@@ -570,7 +795,7 @@ function PricingCard({
           {title}
         </p>
         {badge && (
-          <span className="text-[10px] font-bold uppercase tracking-widest bg-[#FFE566] text-[#1a1a1a] px-2 py-0.5 rounded-full">
+          <span className="text-[10px] font-bold uppercase tracking-widest bg-[#FFE566] text-[#1a1a1a] border-2 border-[#1a1a1a] px-2 py-0.5 rounded-full">
             {badge}
           </span>
         )}
@@ -582,19 +807,23 @@ function PricingCard({
         >
           {price}
         </p>
-        <span className={`text-base font-medium ${highlight ? 'text-white/70' : 'text-[#6B7280]'}`}>
+        <span
+          className={`text-base font-medium ${
+            highlight ? 'text-white/70' : 'text-[#6B7280]'
+          }`}
+        >
           {suffix}
         </span>
       </div>
-      <p className={`text-xs mt-1 ${highlight ? 'text-white/60' : 'text-[#9CA3AF]'}`}>
+      <p className={`text-xs mt-1 ${highlight ? 'text-white/60' : 'text-[#6B7280]'}`}>
         {subline}
       </p>
 
-      <ul className="mt-6 space-y-2 text-sm flex-1">
+      <ul className="mt-6 space-y-2.5 text-sm flex-1">
         {features.map(f => (
-          <li key={f} className="flex items-center gap-2">
+          <li key={f} className="flex items-start gap-2.5">
             <span
-              className={`inline-flex w-5 h-5 rounded-full items-center justify-center text-xs font-bold ${
+              className={`inline-flex w-5 h-5 rounded-full items-center justify-center text-xs font-bold border-2 border-[#1a1a1a] shrink-0 mt-0.5 ${
                 highlight ? 'bg-[#FFE566] text-[#1a1a1a]' : 'bg-[#1a1a1a] text-white'
               }`}
             >
@@ -607,55 +836,50 @@ function PricingCard({
 
       <Link
         href="/login?role=business"
-        className={`mt-7 block text-center font-semibold py-3 rounded-full transition ${
-          highlight
-            ? 'bg-[#FFE566] text-[#1a1a1a] hover:bg-yellow-300'
-            : 'bg-[#1a1a1a] text-white hover:bg-black'
-        }`}
+        className={`mt-7 ${highlight ? 'nb-btn-primary' : 'nb-btn-dark'} font-semibold py-3`}
       >
-        {cta} →
+        {cta} &rarr;
       </Link>
     </div>
   )
 }
 
 /* ─────────────────────────────────────────────────────────────
-   FAQ: answer the "but what if..." questions every
-   non-tech owner asks before signing up.
+   FAQ — the "yeah but" questions every non-tech owner asks
    ──────────────────────────────────────────────────────────── */
 
 function FAQ() {
   const items = [
     {
       q: 'Do I need a new iPad or register?',
-      a: 'No. Any phone or tablet with a web browser works. Most owners use their own phone at the counter.',
+      a: 'No. Any phone or tablet with a web browser works. Most owners just use their own phone at the counter.',
     },
     {
-      q: 'Do my customers need to download an app?',
-      a: 'Never. They scan a QR code, type their phone number, and get a card that lives in their browser. Most save it to their home screen.',
+      q: 'Do my customers have to download an app?',
+      a: 'Never. They scan a QR code, enter their phone number, and get a card that lives in their browser. Most save it to their home screen so it acts like an app without being one.',
     },
     {
-      q: 'What if someone tries to cheat?',
-      a: 'The QR code on your counter rotates every few minutes, so no one can screenshot it and punch themselves from home. One punch per customer, per visit.',
+      q: 'What stops people from cheating the punches?',
+      a: 'The QR code on your counter rotates every 5 minutes, so a screenshot is useless within minutes. Each customer can only collect one punch per day, per program.',
     },
     {
       q: 'What if a customer forgets their phone?',
-      a: 'You can punch by phone number from your merchant view. Their card updates the next time they open it.',
+      a: 'You can add a punch by phone number from your merchant screen. Their card updates the next time they open it.',
     },
     {
-      q: 'How much does it cost?',
-      a: '$60 per month or $600 per year (two months free). One flat price, everything unlimited \u2014 cards, customers, punches, redemptions, analytics. No setup fees. Cancel anytime from your billing portal.',
+      q: 'Is there a free trial or free plan?',
+      a: 'Signing up and building your entire program — business, rewards, everything — is free. You only pay once you flip the shop live so customers can collect punches. It’s $60/month or $600/year (two months free), everything unlimited, cancel anytime from the Stripe billing portal.',
     },
     {
-      q: 'What if I\u2019m not "techy"?',
-      a: 'If you can send a text message, you can run LocalPunch. The whole merchant screen is one button most of the time.',
+      q: 'What if I’m not "techy"?',
+      a: 'If you can send a text message, you can run LocalPunch. At the counter the merchant screen is basically one button.',
     },
   ]
   return (
     <section className="px-5 py-16 sm:py-20">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-10">
-          <span className="inline-block text-xs font-medium text-[#6B7280] tracking-widest uppercase mb-3">
+          <span className="inline-block text-xs font-bold text-[#6B7280] tracking-widest uppercase mb-3">
             Questions other owners asked
           </span>
           <h2
@@ -669,18 +893,20 @@ function FAQ() {
           {items.map((it, i) => (
             <details
               key={i}
-              className="group rounded-xl bg-white border border-[#E5E7EB] open:border-[#1a1a1a]/30 transition"
+              className="group nb-card-flat bg-white overflow-hidden"
             >
               <summary
-                className="flex items-center justify-between cursor-pointer list-none p-5 text-[15px] font-semibold"
+                className="flex items-center justify-between cursor-pointer list-none p-5 text-[15px] font-bold"
                 style={{ fontFamily: 'var(--font-space-grotesk)' }}
               >
                 <span>{it.q}</span>
-                <span className="text-[#9CA3AF] text-xl leading-none transition-transform group-open:rotate-45">
+                <span className="text-[#1a1a1a] text-xl leading-none transition-transform group-open:rotate-45 shrink-0 ml-4">
                   +
                 </span>
               </summary>
-              <div className="px-5 pb-5 text-sm text-[#4B5563] leading-relaxed">{it.a}</div>
+              <div className="px-5 pb-5 text-sm text-[#4B5563] leading-relaxed">
+                {it.a}
+              </div>
             </details>
           ))}
         </div>
@@ -689,27 +915,40 @@ function FAQ() {
   )
 }
 
+/* ─────────────────────────────────────────────────────────────
+   Final CTA
+   ──────────────────────────────────────────────────────────── */
+
 function FinalCTA() {
   return (
     <section className="px-5 py-20">
-      <div className="max-w-3xl mx-auto rounded-2xl bg-[#1a1a1a] text-white p-10 sm:p-14 text-center">
+      <div className="max-w-3xl mx-auto nb-card-flat bg-[#1a1a1a] text-white p-10 sm:p-14 text-center">
         <h2
           className="text-3xl sm:text-4xl font-bold tracking-tight"
           style={{ fontFamily: 'var(--font-space-grotesk)' }}
         >
-          Ready in two minutes.
+          Stop reprinting punch cards.
         </h2>
-        <p className="mt-3 text-white/70 max-w-md mx-auto">
-          Set up your shop, create your first reward, and put a QR on the counter today.
+        <p className="mt-3 text-white/70 max-w-md mx-auto leading-relaxed">
+          Set up your shop, build your first reward, and put a QR on the counter
+          today. It&rsquo;s free until you go live.
         </p>
-        <Link
-          href="/login?role=business"
-          className="inline-block mt-7 bg-[#FFE566] text-[#1a1a1a] rounded-full px-7 py-3 font-semibold hover:bg-yellow-300 transition"
-        >
-          Get started
-        </Link>
-        <p className="mt-4 text-xs text-white/50">
-          $60/month or $600/year · Cancel anytime
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <Link
+            href="/login?role=business"
+            className="nb-btn-primary w-full sm:w-auto text-base font-semibold px-7 py-3.5"
+          >
+            Set up my shop &mdash; free
+          </Link>
+          <Link
+            href="/login"
+            className="w-full sm:w-auto text-white/80 hover:text-white font-medium px-7 py-3.5 underline underline-offset-4"
+          >
+            I already have an account
+          </Link>
+        </div>
+        <p className="mt-5 text-xs text-white/50">
+          $60/month or $600/year &middot; No setup fee &middot; Cancel anytime
         </p>
       </div>
     </section>
@@ -718,18 +957,28 @@ function FinalCTA() {
 
 function Footer() {
   return (
-    <footer className="border-t border-[#1a1a1a]/10 py-8 px-5">
+    <footer className="border-t-2 border-[#1a1a1a] py-8 px-5 bg-white">
       <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-[#6B7280]">
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center justify-center w-6 h-6 bg-[#FFE566] rounded text-xs">🥊</span>
-          <span className="font-medium text-[#1a1a1a]">LocalPunch</span>
+          <span className="inline-flex items-center justify-center w-6 h-6 bg-[#FFE566] border-2 border-[#1a1a1a] rounded text-xs">
+            🥊
+          </span>
+          <span className="font-bold text-[#1a1a1a]">LocalPunch</span>
           <span className="text-[#9CA3AF]">© {new Date().getFullYear()}</span>
         </div>
         <div className="flex items-center gap-5">
-          <Link href="/blog" className="hover:text-[#1a1a1a]">Blog</Link>
-          <Link href="/privacy-policy" className="hover:text-[#1a1a1a]">Privacy</Link>
-          <Link href="/terms" className="hover:text-[#1a1a1a]">Terms</Link>
-          <Link href="/login" className="hover:text-[#1a1a1a]">Sign in</Link>
+          <Link href="/blog" className="hover:text-[#1a1a1a]">
+            Blog
+          </Link>
+          <Link href="/privacy-policy" className="hover:text-[#1a1a1a]">
+            Privacy
+          </Link>
+          <Link href="/terms" className="hover:text-[#1a1a1a]">
+            Terms
+          </Link>
+          <Link href="/login" className="hover:text-[#1a1a1a]">
+            Sign in
+          </Link>
         </div>
       </div>
     </footer>
