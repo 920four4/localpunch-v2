@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 
 export default function EditProgramPage() {
   const { id } = useParams() as { id: string }
-  const [form, setForm] = useState({ name: '', description: '', punches_required: 10, reward_description: '', is_active: true })
+  const [form, setForm] = useState({ name: '', description: '', punches_required: 10, reward_description: '', punch_cooldown_hours: 12, is_active: true })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const router = useRouter()
@@ -16,7 +16,7 @@ export default function EditProgramPage() {
   useEffect(() => {
     async function load() {
       const { data } = await supabase.from('loyalty_programs').select('*').eq('id', id).single()
-      if (data) setForm({ name: data.name, description: data.description ?? '', punches_required: data.punches_required, reward_description: data.reward_description, is_active: data.is_active })
+      if (data) setForm({ name: data.name, description: data.description ?? '', punches_required: data.punches_required, reward_description: data.reward_description, punch_cooldown_hours: data.punch_cooldown_hours ?? 12, is_active: data.is_active })
       setLoading(false)
     }
     load()
@@ -31,7 +31,8 @@ export default function EditProgramPage() {
     setSaving(true)
     const { error } = await supabase.from('loyalty_programs').update({
       name: form.name, description: form.description || null,
-      punches_required: form.punches_required, reward_description: form.reward_description, is_active: form.is_active,
+      punches_required: form.punches_required, reward_description: form.reward_description,
+      punch_cooldown_hours: form.punch_cooldown_hours, is_active: form.is_active,
     }).eq('id', id)
     setSaving(false)
     if (error) { toast.error(error.message); return }
@@ -66,6 +67,11 @@ export default function EditProgramPage() {
         </Field>
         <Field label="Reward description *">
           <input required value={form.reward_description} onChange={e => set('reward_description', e.target.value)} className="field-input" />
+        </Field>
+        <Field label="Hours between punches">
+          <input type="number" min={0} max={168} value={form.punch_cooldown_hours}
+            onChange={e => set('punch_cooldown_hours', parseInt(e.target.value || '0'))} className="field-input w-24" />
+          <p className="text-xs text-[#6B7280] mt-1.5">Minimum wait before the same customer earns another punch. 0 = no limit.</p>
         </Field>
         <div className="flex items-center gap-3">
           <input type="checkbox" id="active" checked={form.is_active} onChange={e => set('is_active', e.target.checked)}

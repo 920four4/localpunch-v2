@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { verifyQrToken, hashToken } from '@/lib/qr/tokens'
+import { nudgeAfterPunch } from '@/lib/punch-nudge'
 import type { PunchResult } from '@/lib/types'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -29,11 +30,13 @@ export async function POST(request: NextRequest): Promise<NextResponse<PunchResu
     // Refuse if the shop's subscription isn't active.
     const { data: program } = await supabase
       .from('loyalty_programs')
-      .select('businesses(is_active)')
+      .select('reward_description, businesses(name, is_active)')
       .eq('id', program_id)
       .single()
 
-    const biz = program?.businesses as unknown as { is_active: boolean } | null
+    const biz = program?.businesses as unknown as
+      | { name: string; is_active: boolean }
+      | null
     if (!biz || !biz.is_active) {
       return NextResponse.json(
         {
@@ -56,9 +59,26 @@ export async function POST(request: NextRequest): Promise<NextResponse<PunchResu
     const result = data as { error?: string; success?: boolean; punch_count?: number; punches_required?: number; is_complete?: boolean }
 
     if (result.error) {
+      if (result.error === 'cooldown') {
+        return NextResponse.json(
+          { error: 'cooldown', message: (result as { message?: string }).message },
+          { status: 429 },
+        )
+      }
       const status = result.error.includes('already') ? 409 : result.error.includes('Not authenticated') ? 401 : 400
       return NextResponse.json({ error: result.error }, { status })
     }
+
+    // Milestone nudge (fire-and-forget; email customers only).
+    const { data: { user } } = await supabase.auth.getUser()
+    await nudgeAfterPunch({
+      email: user?.email,
+      punchCount: result.punch_count!,
+      punchesRequired: result.punches_required!,
+      isComplete: result.is_complete!,
+      businessName: biz.name,
+      rewardDescription: program?.reward_description ?? null,
+    })
 
     return NextResponse.json({
       success: true,

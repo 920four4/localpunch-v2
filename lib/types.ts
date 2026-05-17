@@ -29,6 +29,7 @@ export interface LoyaltyProgram {
   description: string | null
   punches_required: number
   reward_description: string
+  punch_cooldown_hours: number
   is_active: boolean
   created_at: string
   business?: Business

@@ -11,6 +11,7 @@ export default function NewProgramPage() {
     description: '',
     punches_required: 10,
     reward_description: '',
+    punch_cooldown_hours: 12,
   })
   const [saving, setSaving] = useState(false)
   const router = useRouter()
@@ -34,6 +35,7 @@ export default function NewProgramPage() {
       description: form.description || null,
       punches_required: form.punches_required,
       reward_description: form.reward_description,
+      punch_cooldown_hours: form.punch_cooldown_hours,
     })
 
     setSaving(false)
@@ -82,6 +84,13 @@ export default function NewProgramPage() {
         <Field label="Reward description *" hint='What customers get, e.g. "1 free burrito of your choice"'>
           <input required value={form.reward_description} onChange={e => set('reward_description', e.target.value)}
             placeholder="1 free coffee" className="field-input" />
+        </Field>
+
+        <Field label="Hours between punches" hint="Minimum wait before the same customer can earn another punch. 0 = no limit (e.g. allow twice a day). Default 12.">
+          <input type="number" min={0} max={168}
+            value={form.punch_cooldown_hours}
+            onChange={e => set('punch_cooldown_hours', parseInt(e.target.value || '0'))}
+            className="field-input w-24" />
         </Field>
 
         <div className="flex gap-3 pt-2">

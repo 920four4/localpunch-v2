@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient, createAdminClient } from '@/lib/supabase/server'
+import { nudgeAfterPunch } from '@/lib/punch-nudge'
 
 // POST /api/merchant/punch-manual
 // Body: { program_id: string, phone?: string, email?: string, send_sms?: boolean }
@@ -18,6 +19,7 @@ const schema = z
     phone: z.string().min(7).max(20).optional(),
     email: z.string().email().optional(),
     send_sms: z.boolean().optional(),
+    override: z.boolean().optional(),
   })
   .refine(v => !!v.phone || !!v.email, {
     message: 'phone or email required',
@@ -53,13 +55,13 @@ export async function POST(request: NextRequest) {
       { status: 400 },
     )
   }
-  const { program_id, phone, email } = parsed.data
+  const { program_id, phone, email, override } = parsed.data
 
   // Verify ownership + billing.
   const { data: program, error: progErr } = await supabase
     .from('loyalty_programs')
     .select(
-      'id, business_id, name, businesses(owner_id, is_active, name)',
+      'id, business_id, name, reward_description, businesses(owner_id, is_active, name)',
     )
     .eq('id', program_id)
     .maybeSingle()
@@ -130,6 +132,7 @@ export async function POST(request: NextRequest) {
       p_customer_id: customerId,
       p_program_id: program_id,
       p_source: 'manual',
+      p_override: override ?? false,
     },
   )
   if (punchErr) {
@@ -137,6 +140,7 @@ export async function POST(request: NextRequest) {
   }
   const result = punchRes as {
     error?: string
+    message?: string
     success?: boolean
     punch_count?: number
     punches_required?: number
@@ -144,6 +148,17 @@ export async function POST(request: NextRequest) {
     card_id?: string
   }
   if (result?.error) {
+    if (result.error === 'cooldown') {
+      // Recoverable: the merchant can choose to punch anyway.
+      return NextResponse.json(
+        {
+          error: 'cooldown',
+          message: result.message ?? 'This customer was punched here recently.',
+          can_override: true,
+        },
+        { status: 429 },
+      )
+    }
     const status = result.error.includes('already')
       ? 409
       : result.error.includes('complete')
@@ -162,11 +177,24 @@ export async function POST(request: NextRequest) {
     .eq('id', customerId)
     .maybeSingle()
 
+  // Milestone nudge (email customers only; phone-only customers skipped).
+  await nudgeAfterPunch({
+    email: email ?? null,
+    punchCount: result.punch_count ?? 0,
+    punchesRequired: result.punches_required ?? 0,
+    isComplete: result.is_complete ?? false,
+    businessName: biz.name,
+    rewardDescription:
+      (program as { reward_description?: string | null }).reward_description ??
+      null,
+  })
+
   return NextResponse.json({
     success: true,
     punch_count: result.punch_count,
     punches_required: result.punches_required,
     is_complete: result.is_complete,
+    card_id: result.card_id ?? null,
     customer: {
       id: customerId,
       created,

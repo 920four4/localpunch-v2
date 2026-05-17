@@ -16,6 +16,7 @@ type LastResult = {
   punches_required: number
   is_complete: boolean
   message: string
+  card_id: string | null
   customer: {
     id: string
     created: boolean
@@ -37,6 +38,9 @@ export default function ManualPunchClient({
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<LastResult>(null)
   const [errorText, setErrorText] = useState('')
+  const [cooldownMsg, setCooldownMsg] = useState('')
+  const [undoing, setUndoing] = useState(false)
+  const [undone, setUndone] = useState(false)
 
   function formatPhone(raw: string) {
     const d = raw.replace(/\D/g, '').slice(0, 10)
@@ -45,27 +49,33 @@ export default function ManualPunchClient({
     return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`
   }
 
-  async function submit(e: React.FormEvent) {
-    e.preventDefault()
-    setErrorText('')
-
-    const body: Record<string, string> = { program_id: programId }
+  function buildBody(override: boolean): Record<string, string | boolean> | null {
+    const body: Record<string, string | boolean> = { program_id: programId }
     if (mode === 'phone') {
       if (phone.replace(/\D/g, '').length < 10) {
         toast.error('Enter a valid 10-digit number')
-        return
+        return null
       }
       body.phone = `+1${phone.replace(/\D/g, '')}`
     } else {
       if (!email.includes('@')) {
         toast.error('Enter a valid email')
-        return
+        return null
       }
       body.email = email.trim().toLowerCase()
     }
+    if (override) body.override = true
+    return body
+  }
 
+  async function doPunch(override: boolean) {
+    const body = buildBody(override)
+    if (!body) return
+    setErrorText('')
+    setCooldownMsg('')
     setLoading(true)
     setResult(null)
+    setUndone(false)
     try {
       const res = await fetch('/api/merchant/punch-manual', {
         method: 'POST',
@@ -75,18 +85,50 @@ export default function ManualPunchClient({
       const data = await res.json()
       setLoading(false)
       if (!res.ok) {
+        if (res.status === 429 && data.error === 'cooldown') {
+          // Recoverable — let the merchant punch anyway.
+          setCooldownMsg(data.message || 'Punched here recently.')
+          return
+        }
         setErrorText(data.message || data.error || 'Could not record punch')
         toast.error(data.message || data.error || 'Could not record punch')
         return
       }
       setResult(data as LastResult)
       toast.success(data.message)
-      // Reset inputs for the next customer.
       setPhone('')
       setEmail('')
     } catch {
       setLoading(false)
       setErrorText('Network issue — please try again.')
+    }
+  }
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault()
+    await doPunch(false)
+  }
+
+  async function undoLastPunch() {
+    if (!result?.card_id) return
+    setUndoing(true)
+    try {
+      const res = await fetch('/api/merchant/punch-reverse', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ card_id: result.card_id }),
+      })
+      const data = await res.json()
+      setUndoing(false)
+      if (!res.ok) {
+        toast.error(data.error || 'Could not undo')
+        return
+      }
+      setUndone(true)
+      toast.success('Punch undone')
+    } catch {
+      setUndoing(false)
+      toast.error('Network issue — try again.')
     }
   }
 
@@ -201,6 +243,27 @@ export default function ManualPunchClient({
         {errorText && (
           <p className="text-sm text-red-600 text-center">{errorText}</p>
         )}
+
+        {cooldownMsg && (
+          <div className="nb-card-flat p-4 bg-[#FFF7D6] space-y-3 text-center">
+            <p className="text-sm text-[#1a1a1a]">⏳ {cooldownMsg}</p>
+            <button
+              type="button"
+              onClick={() => doPunch(true)}
+              disabled={loading}
+              className="w-full bg-[#1a1a1a] text-white rounded-full py-2.5 text-sm font-semibold disabled:opacity-40 hover:bg-black transition"
+            >
+              {loading ? 'Recording…' : 'Punch anyway →'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setCooldownMsg('')}
+              className="text-xs text-[#6B7280] hover:text-[#1a1a1a]"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
       </form>
 
       {result && result.success && (
@@ -241,6 +304,21 @@ export default function ManualPunchClient({
               </div>
             ))}
           </div>
+
+          {undone ? (
+            <p className="text-xs text-[#6B7280]">↩ Punch undone</p>
+          ) : (
+            result.card_id && (
+              <button
+                type="button"
+                onClick={undoLastPunch}
+                disabled={undoing}
+                className="text-xs text-[#FF6B6B] underline underline-offset-2 disabled:opacity-50"
+              >
+                {undoing ? 'Undoing…' : 'Made a mistake? Undo this punch'}
+              </button>
+            )
+          )}
         </div>
       )}
 

@@ -42,7 +42,9 @@ export default function ClaimPunch({
   signedInAs,
 }: Props) {
   const [step, setStep] = useState<Step>('loading')
+  const [method, setMethod] = useState<'phone' | 'email'>('phone')
   const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
   const [otp, setOtp] = useState('')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<PunchResult | null>(null)
@@ -75,12 +77,22 @@ export default function ClaimPunch({
 
   async function sendOtp(e: React.FormEvent) {
     e.preventDefault()
-    if (phone.replace(/\D/g, '').length < 10) {
-      toast.error('Enter a valid 10-digit number')
+    if (method === 'phone') {
+      if (phone.replace(/\D/g, '').length < 10) {
+        toast.error('Enter a valid 10-digit number')
+        return
+      }
+    } else if (!email.includes('@')) {
+      toast.error('Enter a valid email')
       return
     }
     setLoading(true)
-    const { error } = await supabase.auth.signInWithOtp({ phone: e164(phone) })
+    const { error } =
+      method === 'phone'
+        ? await supabase.auth.signInWithOtp({ phone: e164(phone) })
+        : await supabase.auth.signInWithOtp({
+            email: email.trim().toLowerCase(),
+          })
     setLoading(false)
     if (error) toast.error(error.message)
     else setStep('need_otp')
@@ -90,14 +102,25 @@ export default function ClaimPunch({
     e.preventDefault()
     if (otp.length < 6) return
     setLoading(true)
-    const { error } = await supabase.auth.verifyOtp({
-      phone: e164(phone),
-      token: otp,
-      type: 'sms',
-    })
+    const { error } =
+      method === 'phone'
+        ? await supabase.auth.verifyOtp({
+            phone: e164(phone),
+            token: otp,
+            type: 'sms',
+          })
+        : await supabase.auth.verifyOtp({
+            email: email.trim().toLowerCase(),
+            token: otp,
+            type: 'email',
+          })
     if (error) {
       setLoading(false)
-      toast.error('Wrong code — check your SMS and try again.')
+      toast.error(
+        method === 'phone'
+          ? 'Wrong code — check your SMS and try again.'
+          : 'Wrong code — check your email and try again.',
+      )
       return
     }
     // Session is now set; the /api/punch call below will send it via cookie.
@@ -276,34 +299,78 @@ export default function ClaimPunch({
 
       {step === 'need_phone' ? (
         <form onSubmit={sendOtp} className="space-y-4">
-          <div>
-            <label htmlFor="phone" className="block text-sm font-medium mb-1.5">
-              Your mobile number
-            </label>
-            <div className="flex">
-              <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-[#E5E7EB] bg-[#FAFAF8] text-sm text-[#6B7280] font-mono">
-                +1
-              </span>
+          <div className="flex p-1 bg-[#F4F4F0] border border-[#E5E7EB] rounded-full">
+            {(['phone', 'email'] as const).map(m => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => setMethod(m)}
+                className={`flex-1 py-2 text-sm font-medium rounded-full transition-colors ${
+                  method === m
+                    ? 'bg-[#1a1a1a] text-white'
+                    : 'text-[#6B7280] hover:text-[#1a1a1a]'
+                }`}
+              >
+                {m === 'phone' ? 'Phone' : 'Email'}
+              </button>
+            ))}
+          </div>
+
+          {method === 'phone' ? (
+            <div>
+              <label htmlFor="phone" className="block text-sm font-medium mb-1.5">
+                Your mobile number
+              </label>
+              <div className="flex">
+                <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-[#E5E7EB] bg-[#FAFAF8] text-sm text-[#6B7280] font-mono">
+                  +1
+                </span>
+                <input
+                  id="phone"
+                  type="tel"
+                  required
+                  autoFocus
+                  inputMode="numeric"
+                  value={phone}
+                  onChange={e => setPhone(formatPhone(e.target.value))}
+                  placeholder="(555) 000-0000"
+                  className="flex-1 border border-[#E5E7EB] rounded-r-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#FFE566] focus:border-[#1a1a1a]"
+                />
+              </div>
+              <p className="text-xs text-[#9CA3AF] mt-2">
+                We&rsquo;ll text you a code to save your card. No app install,
+                no password.
+              </p>
+            </div>
+          ) : (
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium mb-1.5">
+                Your email
+              </label>
               <input
-                id="phone"
-                type="tel"
+                id="email"
+                type="email"
                 required
                 autoFocus
-                inputMode="numeric"
-                value={phone}
-                onChange={e => setPhone(formatPhone(e.target.value))}
-                placeholder="(555) 000-0000"
-                className="flex-1 border border-[#E5E7EB] rounded-r-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#FFE566] focus:border-[#1a1a1a]"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="w-full border border-[#E5E7EB] rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#FFE566] focus:border-[#1a1a1a]"
               />
+              <p className="text-xs text-[#9CA3AF] mt-2">
+                We&rsquo;ll email you a code to save your card. No app install,
+                no password.
+              </p>
             </div>
-            <p className="text-xs text-[#9CA3AF] mt-2">
-              We&rsquo;ll text you a code to save your card. No app install, no
-              password.
-            </p>
-          </div>
+          )}
           <button
             type="submit"
-            disabled={loading || phone.replace(/\D/g, '').length < 10}
+            disabled={
+              loading ||
+              (method === 'phone'
+                ? phone.replace(/\D/g, '').length < 10
+                : !email.includes('@'))
+            }
             className="w-full bg-[#1a1a1a] text-white rounded-full py-3 text-sm font-semibold disabled:opacity-40 hover:bg-black transition"
           >
             {loading ? 'Sending…' : 'Get my punch →'}
@@ -314,7 +381,9 @@ export default function ClaimPunch({
           <div>
             <p className="text-sm text-[#6B7280] mb-3">
               Code sent to{' '}
-              <strong className="text-[#1a1a1a]">+1 {phone}</strong>
+              <strong className="text-[#1a1a1a]">
+                {method === 'phone' ? `+1 ${phone}` : email}
+              </strong>
             </p>
             <label htmlFor="otp" className="block text-sm font-medium mb-1.5">
               6-digit code
@@ -348,7 +417,7 @@ export default function ClaimPunch({
             }}
             className="w-full text-center text-sm text-[#6B7280] hover:text-[#1a1a1a]"
           >
-            ← Use a different number
+            ← Use a different {method === 'phone' ? 'number' : 'email'}
           </button>
         </form>
       )}

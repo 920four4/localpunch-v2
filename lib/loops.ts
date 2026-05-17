@@ -146,6 +146,7 @@ export type LoopsEventName =
   | 'merchant_churned' // fully canceled and period ended
   | 'customer_signed_up'
   | 'customer_first_punch'
+  | 'customer_one_away' // one punch away from the reward
   | 'customer_reward_ready'
 
 export async function sendEvent(
