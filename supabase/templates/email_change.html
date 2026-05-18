@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light only" />
+    <meta name="supported-color-schemes" content="light only" />
+    <title>Confirm your new email — LocalPunch</title>
+  </head>
+  <body style="margin:0; padding:0; background-color:#FAFAF8; -webkit-text-size-adjust:100%;">
+    <div style="display:none; max-height:0; overflow:hidden; opacity:0; mso-hide:all;">
+      Confirm your new email address for LocalPunch.
+    </div>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAFAF8;">
+      <tr>
+        <td align="center" style="padding:32px 16px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px; width:100%;">
+            <tr>
+              <td style="padding:0 4px 20px 4px;">
+                <table role="presentation" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td style="background-color:#FFE566; border:1px solid #E0CF4A; border-radius:8px; width:34px; height:34px; text-align:center; vertical-align:middle; font-size:16px;">🥊</td>
+                    <td style="padding-left:10px; font-family:'Helvetica Neue',Arial,sans-serif; font-size:18px; font-weight:700; color:#1a1a1a; letter-spacing:-0.01em;">LocalPunch</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="background-color:#FFFFFF; border:1px solid #E7E6DF; border-radius:16px; padding:36px 32px;">
+                <h1 style="margin:0 0 12px 0; font-family:'Helvetica Neue',Arial,sans-serif; font-size:24px; line-height:1.25; font-weight:700; color:#1a1a1a; letter-spacing:-0.02em;">
+                  Confirm your new email
+                </h1>
+                <p style="margin:0 0 28px 0; font-family:'Helvetica Neue',Arial,sans-serif; font-size:15px; line-height:1.6; color:#5A554C;">
+                  Confirm <strong style="color:#1a1a1a;">{{ .Email }}</strong> to
+                  start using it to sign in to LocalPunch.
+                </p>
+
+                <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 28px 0;">
+                  <tr>
+                    <td align="center" style="border-radius:10px; background-color:#FFE566;">
+                      <a href="{{ .ConfirmationURL }}" target="_blank"
+                         style="display:inline-block; padding:14px 28px; font-family:'Helvetica Neue',Arial,sans-serif; font-size:15px; font-weight:700; color:#1a1a1a; text-decoration:none; border:1px solid #1a1a1a; border-radius:10px;">
+                        Confirm new email &rarr;
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+
+                <p style="margin:0; font-family:'Helvetica Neue',Arial,sans-serif; font-size:12px; line-height:1.6; color:#9A9387; border-top:1px solid #EDEBE3; padding-top:20px;">
+                  Button not working? Paste this link into your browser:<br />
+                  <a href="{{ .ConfirmationURL }}" target="_blank" style="color:#5A554C; word-break:break-all;">{{ .ConfirmationURL }}</a>
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:24px 8px 0 8px;">
+                <p style="margin:0 0 6px 0; font-family:'Helvetica Neue',Arial,sans-serif; font-size:12px; line-height:1.6; color:#9A9387;">
+                  If you didn&rsquo;t request an email change, ignore this &mdash;
+                  your current email stays active and nothing changes.
+                </p>
+                <p style="margin:0; font-family:'Helvetica Neue',Arial,sans-serif; font-size:12px; line-height:1.6; color:#B0AB9E;">
+                  LocalPunch &middot; Digital loyalty cards for local businesses<br />
+                  Sent by localpunch@920four.com
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

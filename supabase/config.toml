@@ -229,10 +229,21 @@ pass = "env(RESEND_SMTP_PASSWORD)"
 admin_email = "localpunch@920four.com"
 sender_name = "LocalPunch"
 
-# Uncomment to customize email template
-# [auth.email.template.invite]
-# subject = "You have been invited"
-# content_path = "./supabase/templates/invite.html"
+# Branded LocalPunch auth emails. The hosted project is the source of truth
+# for production — mirror these in Dashboard → Authentication → Emails →
+# Templates (paste the HTML, set the matching subject). These blocks govern
+# the local CLI and document the intended production state.
+[auth.email.template.magic_link]
+subject = "Your LocalPunch sign-in link"
+content_path = "./supabase/templates/magic_link.html"
+
+[auth.email.template.confirmation]
+subject = "Confirm your email — LocalPunch"
+content_path = "./supabase/templates/confirm_signup.html"
+
+[auth.email.template.email_change]
+subject = "Confirm your new email — LocalPunch"
+content_path = "./supabase/templates/email_change.html"
 
 # Uncomment to customize notification email template
 # [auth.email.notification.password_changed]
