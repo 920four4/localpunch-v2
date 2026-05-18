@@ -7,12 +7,31 @@ export default async function MerchantDashboard() {
 
   const { data: business } = await supabase
     .from('businesses')
-    .select('id, name')
+    .select('id, name, is_active')
     .eq('owner_id', user!.id)
     .single()
 
   if (!business) {
     return <SetupBusinessPrompt />
+  }
+
+  const { count: programCount } = await supabase
+    .from('loyalty_programs')
+    .select('id', { count: 'exact', head: true })
+    .eq('business_id', business.id)
+
+  const hasProgram = (programCount ?? 0) > 0
+  const isLive = Boolean(business.is_active)
+
+  // Until the shop is fully live, the dashboard *is* the onboarding guide.
+  if (!hasProgram || !isLive) {
+    return (
+      <GettingStarted
+        businessName={business.name}
+        hasProgram={hasProgram}
+        isLive={isLive}
+      />
+    )
   }
 
   const { data: stats } = await supabase
@@ -34,14 +53,22 @@ export default async function MerchantDashboard() {
 
   return (
     <div className="space-y-7">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <div>
           <h1 className="page-header text-2xl">{business.name}</h1>
           <p className="text-sm text-[#6B7280] mt-0.5">Merchant dashboard</p>
         </div>
-        <Link href="/merchant/qr" className="nb-btn-primary text-sm font-semibold px-4 py-2">
-          Show QR →
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/merchant/guide"
+            className="hidden sm:inline-flex nb-btn-ghost text-sm font-medium px-4 py-2"
+          >
+            📖 Setup guide
+          </Link>
+          <Link href="/merchant/qr" className="nb-btn-primary text-sm font-semibold px-4 py-2">
+            Show QR →
+          </Link>
+        </div>
       </div>
 
       {/* KPI cards */}
@@ -79,6 +106,148 @@ export default async function MerchantDashboard() {
             ))}
           </div>
         )}
+      </div>
+    </div>
+  )
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Getting started — the dashboard until the shop is live.
+   Plain language, ordered, shows exactly what's left to do.
+   ──────────────────────────────────────────────────────────── */
+
+function GettingStarted({
+  businessName,
+  hasProgram,
+  isLive,
+}: {
+  businessName: string
+  hasProgram: boolean
+  isLive: boolean
+}) {
+  const steps = [
+    {
+      done: true,
+      title: 'Create your shop',
+      desc: `${businessName} is set up. This is the name customers see on their card.`,
+      href: null as string | null,
+      cta: null as string | null,
+    },
+    {
+      done: hasProgram,
+      title: 'Create your first reward',
+      desc: 'Decide what customers earn — e.g. “Buy 10 coffees, get one free.” Takes about a minute, and it’s free to build.',
+      href: '/merchant/programs/new',
+      cta: 'Create a reward',
+    },
+    {
+      done: isLive,
+      title: 'Go live',
+      desc: 'Turn the shop on so customers can start collecting punches. $60/month or $600/year, cancel anytime. You only pay at this step.',
+      href: '/merchant/billing',
+      cta: 'Activate my shop',
+    },
+  ]
+
+  const doneCount = steps.filter(s => s.done).length
+  const total = steps.length
+  // The first step that still needs doing — the one we push them toward.
+  const nextIndex = steps.findIndex(s => !s.done)
+  const pct = Math.round((doneCount / total) * 100)
+
+  return (
+    <div className="space-y-6 max-w-2xl">
+      <div>
+        <h1 className="page-header text-2xl">Let&rsquo;s get {businessName} running</h1>
+        <p className="text-sm text-[#6B7280] mt-1">
+          {doneCount} of {total} done. A couple of short steps and your punch
+          card is live &mdash; we&rsquo;ll walk you through each one.
+        </p>
+      </div>
+
+      {/* Progress */}
+      <div className="nb-card-flat p-4">
+        <div className="flex justify-between text-xs font-medium text-[#6B7280] mb-2">
+          <span>Setup progress</span>
+          <span className="text-[#1a1a1a]">{pct}%</span>
+        </div>
+        <div className="h-2.5 bg-[#F4F4F0] rounded-full overflow-hidden border border-[#1a1a1a]">
+          <div
+            className="h-full bg-[#FFE566] transition-all"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Steps */}
+      <div className="space-y-3">
+        {steps.map((s, i) => {
+          const isNext = i === nextIndex
+          return (
+            <div
+              key={s.title}
+              className={`nb-card-flat p-5 flex items-start gap-4 ${
+                s.done ? 'bg-[#F4F4F0]' : isNext ? 'bg-white' : 'bg-white opacity-60'
+              }`}
+            >
+              <span
+                className={`shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full border-2 border-[#1a1a1a] text-sm font-bold ${
+                  s.done ? 'bg-[#A8E6CF]' : isNext ? 'bg-[#FFE566]' : 'bg-white text-[#6B7280]'
+                }`}
+                style={{ fontFamily: 'var(--font-space-grotesk)' }}
+              >
+                {s.done ? '✓' : i + 1}
+              </span>
+              <div className="flex-1 min-w-0">
+                <p
+                  className="font-bold text-[15px]"
+                  style={{ fontFamily: 'var(--font-space-grotesk)' }}
+                >
+                  {s.title}
+                  {s.done && (
+                    <span className="ml-2 text-xs font-medium text-[#6B7280]">
+                      Done
+                    </span>
+                  )}
+                </p>
+                <p className="text-sm text-[#6B7280] leading-relaxed mt-1">
+                  {s.desc}
+                </p>
+                {!s.done && s.href && s.cta && (
+                  <Link
+                    href={s.href}
+                    className={`inline-flex mt-3 text-sm font-semibold px-4 py-2 ${
+                      isNext ? 'nb-btn-primary' : 'nb-btn-ghost'
+                    }`}
+                  >
+                    {s.cta} →
+                  </Link>
+                )}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Help */}
+      <div className="nb-card-flat p-5 bg-[#FFE566] flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="flex-1">
+          <p
+            className="font-bold text-sm"
+            style={{ fontFamily: 'var(--font-space-grotesk)' }}
+          >
+            📖 Not sure how it works at the counter?
+          </p>
+          <p className="text-xs text-[#1a1a1a]/80 mt-0.5">
+            The 2-minute guide explains exactly what you and your customers do.
+          </p>
+        </div>
+        <Link
+          href="/merchant/guide"
+          className="bg-[#1a1a1a] text-white rounded-full px-4 py-2 text-sm font-semibold hover:bg-black transition whitespace-nowrap text-center"
+        >
+          Read the guide →
+        </Link>
       </div>
     </div>
   )
