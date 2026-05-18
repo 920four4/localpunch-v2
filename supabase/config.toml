@@ -175,7 +175,10 @@ password_requirements = ""
 
 [auth.rate_limit]
 # Number of emails that can be sent per hour. Requires auth.email.smtp to be enabled.
-email_sent = 2
+# Raised from the default of 2: the built-in sender's 2/hr cap was causing
+# "Error sending confirmation email" on business sign-in. Custom SMTP (below)
+# must be enabled for this limit to apply.
+email_sent = 30
 # Number of SMS messages that can be sent per hour. Requires auth.sms to be enabled.
 sms_sent = 30
 # Number of anonymous sign-ins that can be made per hour per IP address. Requires enable_anonymous_sign_ins = true.
@@ -212,15 +215,19 @@ otp_length = 6
 # Number of seconds before the email OTP expires (defaults to 1 hour).
 otp_expiry = 3600
 
-# Use a production-ready SMTP server
-# [auth.email.smtp]
-# enabled = true
-# host = "smtp.sendgrid.net"
-# port = 587
-# user = "apikey"
-# pass = "env(SENDGRID_API_KEY)"
-# admin_email = "admin@email.com"
-# sender_name = "Admin"
+# Production-ready SMTP via Resend. The hosted project must mirror these
+# values in Dashboard → Authentication → SMTP Settings (the dashboard is the
+# source of truth for production; this block only governs the local CLI).
+# RESEND_SMTP_PASSWORD is a Resend API key (the SMTP username is literally
+# "resend"). Sender domain 920four.com must be verified in Resend.
+[auth.email.smtp]
+enabled = true
+host = "smtp.resend.com"
+port = 587
+user = "resend"
+pass = "env(RESEND_SMTP_PASSWORD)"
+admin_email = "localpunch@920four.com"
+sender_name = "LocalPunch"
 
 # Uncomment to customize email template
 # [auth.email.template.invite]
