@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
   const origin =
     request.nextUrl.origin ||
     process.env.NEXT_PUBLIC_SITE_URL ||
-    'https://localpunch-v2.vercel.app'
+    'https://localpunchcard.io'
   const link = `${origin.replace(/\/$/, '')}/r/${token}`
 
   const result = await sendSms(

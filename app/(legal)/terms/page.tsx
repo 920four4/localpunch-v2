@@ -25,8 +25,8 @@ export default function TermsAndConditions() {
         </p>
         <p>
           Operator: LocalPunch<br />
-          Contact: <a href="mailto:hello@localpunch.app" className="underline">hello@localpunch.app</a><br />
-          Website: <strong>localpunch-v2.vercel.app</strong>
+          Contact: <a href="mailto:hello@localpunchcard.io" className="underline">hello@localpunchcard.io</a><br />
+          Website: <strong>localpunchcard.io</strong>
         </p>
       </Section>
 
@@ -47,7 +47,7 @@ export default function TermsAndConditions() {
         <div className="border-2 border-[#1a1a1a] rounded-lg p-4 bg-[#FAFAF8] mt-4">
           <p className="font-semibold mb-2">How to get help or stop messages:</p>
           <ul>
-            <li>Reply <strong>HELP</strong> to any message for assistance, or email <a href="mailto:hello@localpunch.app" className="underline">hello@localpunch.app</a></li>
+            <li>Reply <strong>HELP</strong> to any message for assistance, or email <a href="mailto:hello@localpunchcard.io" className="underline">hello@localpunchcard.io</a></li>
             <li>Reply <strong>STOP</strong> to any message to opt out and stop receiving SMS from LocalPunch</li>
           </ul>
         </div>
@@ -129,7 +129,7 @@ export default function TermsAndConditions() {
       <Section title="10. Contact Us">
         <p>
           For questions about these Terms & Conditions or our SMS program:<br />
-          Email: <a href="mailto:hello@localpunch.app" className="underline">hello@localpunch.app</a><br />
+          Email: <a href="mailto:hello@localpunchcard.io" className="underline">hello@localpunchcard.io</a><br />
           To opt out of SMS: Reply <strong>STOP</strong> to any message
         </p>
       </Section>

@@ -61,7 +61,7 @@ export async function renderMarkdown(md: string): Promise<string> {
 }
 
 export function postUrl(slug: string, base?: string): string {
-  const root = base ?? 'https://localpunch-v2.vercel.app'
+  const root = base ?? 'https://localpunchcard.io'
   return `${root}/blog/${slug}`
 }
 

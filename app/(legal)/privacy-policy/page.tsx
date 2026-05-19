@@ -20,11 +20,11 @@ export default function PrivacyPolicy() {
         <p>
           LocalPunch ("we," "us," or "our") operates a digital punch card loyalty platform that
           connects local businesses with their customers. Our service is available at{' '}
-          <strong>localpunch-v2.vercel.app</strong> and any associated mobile applications.
+          <strong>localpunchcard.io</strong> and any associated mobile applications.
         </p>
         <p>
           For questions about this policy, contact us at:{' '}
-          <a href="mailto:hello@localpunch.app" className="underline">hello@localpunch.app</a>
+          <a href="mailto:hello@localpunchcard.io" className="underline">hello@localpunchcard.io</a>
         </p>
       </Section>
 
@@ -71,7 +71,7 @@ export default function PrivacyPolicy() {
           <li><strong>Message frequency:</strong> One message per sign-in attempt. We do not send recurring marketing messages.</li>
           <li><strong>Message and data rates may apply</strong> depending on your mobile carrier plan.</li>
           <li><strong>To opt out:</strong> Reply <strong>STOP</strong> to any message to stop receiving SMS from LocalPunch.</li>
-          <li><strong>For help:</strong> Reply <strong>HELP</strong> or email <a href="mailto:hello@localpunch.app" className="underline">hello@localpunch.app</a>.</li>
+          <li><strong>For help:</strong> Reply <strong>HELP</strong> or email <a href="mailto:hello@localpunchcard.io" className="underline">hello@localpunchcard.io</a>.</li>
           <li>We do not share your phone number with third parties for marketing purposes.</li>
         </ul>
       </Section>
@@ -103,7 +103,7 @@ export default function PrivacyPolicy() {
         </ul>
         <p>
           To exercise any of these rights, email us at{' '}
-          <a href="mailto:hello@localpunch.app" className="underline">hello@localpunch.app</a>.
+          <a href="mailto:hello@localpunchcard.io" className="underline">hello@localpunchcard.io</a>.
         </p>
       </Section>
 
@@ -134,7 +134,7 @@ export default function PrivacyPolicy() {
       <Section title="11. Contact">
         <p>
           LocalPunch<br />
-          Email: <a href="mailto:hello@localpunch.app" className="underline">hello@localpunch.app</a>
+          Email: <a href="mailto:hello@localpunchcard.io" className="underline">hello@localpunchcard.io</a>
         </p>
       </Section>
     </article>

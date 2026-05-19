@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-const SITE_URL = 'https://localpunch-v2.vercel.app'
+const SITE_URL = 'https://localpunchcard.io'
 
 export default function robots(): MetadataRoute.Robots {
   return {

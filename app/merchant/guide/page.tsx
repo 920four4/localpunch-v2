@@ -141,10 +141,10 @@ export default function MerchantGuidePage() {
         <p>
           Email a real person at{' '}
           <a
-            href="mailto:support@localpunch.app"
+            href="mailto:support@localpunchcard.io"
             className="underline underline-offset-2 hover:bg-[#FFE566]"
           >
-            support@localpunch.app
+            support@localpunchcard.io
           </a>{' '}
           &mdash; we&rsquo;d genuinely rather help than have you give up on it.
         </p>

@@ -1,7 +1,7 @@
 ---
 key: merchantDay1FirstPunch
 envVar: LOOPS_TX_MERCHANT_DAY1
-from: LocalPunch <localpunch@920four.com>
+from: LocalPunch <auth@localpunchcard.io>
 subject: "The 30-second first-punch guide"
 previewText: "One button. That's the whole thing."
 trigger: Day 1 of merchant_activated Loop (or transactional after 1 day)
@@ -27,7 +27,7 @@ That's it.
 ### Two things that trip people up
 
 **"My customer doesn't have the camera app working."**
-No problem. Any phone with a browser works — just have them go to `localpunch.app/scan` and point it at the QR. Takes 5 seconds longer, same result.
+No problem. Any phone with a browser works — just have them go to `localpunchcard.io/scan` and point it at the QR. Takes 5 seconds longer, same result.
 
 **"What if I punch twice by accident?"**
 We built in a 60-second cooldown per customer, per card. Tap the button 50 times — only the first one counts. You won't accidentally ruin their card.
