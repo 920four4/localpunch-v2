@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-const SITE_URL = 'https://localpunchcard.io'
+const SITE_URL = 'https://www.localpunchcard.io'
 
 export default function robots(): MetadataRoute.Robots {
   return {

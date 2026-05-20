@@ -63,7 +63,7 @@ export function buildPunchUrl(token: string, origin?: string): string {
   const base =
     origin ??
     process.env.NEXT_PUBLIC_SITE_URL ??
-    'https://localpunchcard.io'
+    'https://www.localpunchcard.io'
   return `${base.replace(/\/$/, '')}/p/${token}`
 }
 

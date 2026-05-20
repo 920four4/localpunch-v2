@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 // Machine-readable summary of the site for LLMs + agents. Dynamically lists
 // the most recent published blog posts so agents can discover fresh content.
 
-const SITE_URL = 'https://localpunchcard.io'
+const SITE_URL = 'https://www.localpunchcard.io'
 
 export const dynamic = 'force-dynamic'
 

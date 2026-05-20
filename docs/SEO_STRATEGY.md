@@ -2,7 +2,7 @@
 
 *Last updated: April 2026*
 *Owner: Growth / Founder*
-*Base URL: `https://localpunchcard.io`*
+*Base URL: `https://www.localpunchcard.io`*
 
 ---
 
@@ -181,7 +181,7 @@ If you're reading this on the LocalPunch blog, you know our angle: digital punch
 
 There are a few ways to do this — [we wrote a comparison here](/blog/localpunch-vs-stamp-me) if you want the breakdown. For this walkthrough, I'll use LocalPunch (what we build) because I know it cold. Any tool you pick, the steps are similar.
 
-- Go to [localpunchcard.io](https://localpunchcard.io) and sign up as a business.
+- Go to [localpunchcard.io](https://www.localpunchcard.io) and sign up as a business.
 - Create a program: name, reward, 10 punches.
 - Save.
 
@@ -256,24 +256,24 @@ LocalPunch is a digital loyalty punch-card platform built for small local busine
 
 ## Docs
 
-- [Home](https://localpunchcard.io/): product overview, how it works, pricing, and FAQ.
-- [Pricing](https://localpunchcard.io/#pricing): $60/month or $600/year, flat, unlimited.
-- [Sign up](https://localpunchcard.io/login?role=business): create a business account (setup is free; pay only when going live).
-- [Sign in](https://localpunchcard.io/login): existing customer and merchant sign-in.
-- [Blog](https://localpunchcard.io/blog): guides, industry deep-dives, and case studies for small-business owners.
-- [Privacy policy](https://localpunchcard.io/privacy-policy): how customer and merchant data is handled.
-- [Terms of service](https://localpunchcard.io/terms): service terms for merchants and customers.
+- [Home](https://www.localpunchcard.io/): product overview, how it works, pricing, and FAQ.
+- [Pricing](https://www.localpunchcard.io/#pricing): $60/month or $600/year, flat, unlimited.
+- [Sign up](https://www.localpunchcard.io/login?role=business): create a business account (setup is free; pay only when going live).
+- [Sign in](https://www.localpunchcard.io/login): existing customer and merchant sign-in.
+- [Blog](https://www.localpunchcard.io/blog): guides, industry deep-dives, and case studies for small-business owners.
+- [Privacy policy](https://www.localpunchcard.io/privacy-policy): how customer and merchant data is handled.
+- [Terms of service](https://www.localpunchcard.io/terms): service terms for merchants and customers.
 
 ## Optional
 
-- [Digital punch cards vs paper](https://localpunchcard.io/blog/digital-punch-cards-vs-paper): honest comparison of paper and digital loyalty cards, with operator trade-offs.
-- [Coffee shop loyalty program setup](https://localpunchcard.io/blog/coffee-shop-loyalty-program-setup): 10-minute guide to launching a working coffee shop loyalty program.
-- [Barbershop loyalty strategy](https://localpunchcard.io/blog/barbershop-loyalty-strategy): loyalty design tied to the 4-week haircut cadence.
-- [LocalPunch vs Stamp Me](https://localpunchcard.io/blog/localpunch-vs-stamp-me): candid feature, pricing, and use-case comparison.
-- [Loyalty program cost breakdown](https://localpunchcard.io/blog/loyalty-program-cost-breakdown): what small-business loyalty programs actually cost in 2026.
-- [FAQ: do customers need an app?](https://localpunchcard.io/#faq): they don't — a mobile browser and a QR scan are enough.
-- [FAQ: how is fraud prevented?](https://localpunchcard.io/#faq): the merchant's counter QR rotates every few minutes; one punch per customer per visit.
-- [FAQ: what if a customer forgets their phone?](https://localpunchcard.io/#faq): the owner can punch by phone number from the merchant view.
+- [Digital punch cards vs paper](https://www.localpunchcard.io/blog/digital-punch-cards-vs-paper): honest comparison of paper and digital loyalty cards, with operator trade-offs.
+- [Coffee shop loyalty program setup](https://www.localpunchcard.io/blog/coffee-shop-loyalty-program-setup): 10-minute guide to launching a working coffee shop loyalty program.
+- [Barbershop loyalty strategy](https://www.localpunchcard.io/blog/barbershop-loyalty-strategy): loyalty design tied to the 4-week haircut cadence.
+- [LocalPunch vs Stamp Me](https://www.localpunchcard.io/blog/localpunch-vs-stamp-me): candid feature, pricing, and use-case comparison.
+- [Loyalty program cost breakdown](https://www.localpunchcard.io/blog/loyalty-program-cost-breakdown): what small-business loyalty programs actually cost in 2026.
+- [FAQ: do customers need an app?](https://www.localpunchcard.io/#faq): they don't — a mobile browser and a QR scan are enough.
+- [FAQ: how is fraud prevented?](https://www.localpunchcard.io/#faq): the merchant's counter QR rotates every few minutes; one punch per customer per visit.
+- [FAQ: what if a customer forgets their phone?](https://www.localpunchcard.io/#faq): the owner can punch by phone number from the merchant view.
 ```
 
 ---

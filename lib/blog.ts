@@ -61,7 +61,7 @@ export async function renderMarkdown(md: string): Promise<string> {
 }
 
 export function postUrl(slug: string, base?: string): string {
-  const root = base ?? 'https://localpunchcard.io'
+  const root = base ?? 'https://www.localpunchcard.io'
   return `${root}/blog/${slug}`
 }
 

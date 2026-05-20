@@ -6,7 +6,7 @@ import { formatDate, type BlogPostSummary } from '@/lib/blog'
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-const SITE_URL = 'https://localpunchcard.io'
+const SITE_URL = 'https://www.localpunchcard.io'
 
 export const metadata: Metadata = {
   title: 'Blog — LocalPunch',

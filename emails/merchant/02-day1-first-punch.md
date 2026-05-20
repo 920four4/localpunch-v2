@@ -27,7 +27,7 @@ That's it.
 ### Two things that trip people up
 
 **"My customer doesn't have the camera app working."**
-No problem. Any phone with a browser works — just have them go to `localpunchcard.io/scan` and point it at the QR. Takes 5 seconds longer, same result.
+No problem. Any phone with a browser works — just have them go to `www.localpunchcard.io/scan` and point it at the QR. Takes 5 seconds longer, same result.
 
 **"What if I punch twice by accident?"**
 We built in a 60-second cooldown per customer, per card. Tap the button 50 times — only the first one counts. You won't accidentally ruin their card.

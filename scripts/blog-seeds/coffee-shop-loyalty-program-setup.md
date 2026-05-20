@@ -60,7 +60,7 @@ If you're reading this on the LocalPunch blog, you know our angle: digital punch
 
 There are a few ways to do this — [we wrote a comparison here](/blog/digital-punch-cards-vs-paper) if you want the breakdown. For this walkthrough, I'll use LocalPunch (what we build) because I know it cold. Any tool you pick, the steps are similar.
 
-- Go to [localpunchcard.io](https://localpunchcard.io) and sign up as a business.
+- Go to [localpunchcard.io](https://www.localpunchcard.io) and sign up as a business.
 - Create a program: name, reward, 10 punches.
 - Save.
 

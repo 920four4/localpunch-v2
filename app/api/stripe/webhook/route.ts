@@ -198,8 +198,8 @@ export async function POST(request: NextRequest) {
         first_name: owner.firstName ?? 'there',
         business_name: prev?.name ?? 'your shop',
         plan_label: interval === 'year' ? 'Yearly ($600/yr)' : 'Monthly ($60/mo)',
-        dashboard_url: 'https://localpunchcard.io/merchant',
-        qr_url: `https://localpunchcard.io/merchant/qr`,
+        dashboard_url: 'https://www.localpunchcard.io/merchant',
+        qr_url: `https://www.localpunchcard.io/merchant/qr`,
       })
     } else if (wasActive && !nowActive && sub.status === 'canceled') {
       // 🛑 Canceled
@@ -298,7 +298,7 @@ export async function POST(request: NextRequest) {
               first_name: info.firstName ?? 'there',
               business_name: info.business.name,
               amount_due: ((invoice.amount_due ?? 0) / 100).toFixed(2),
-              billing_portal_url: 'https://localpunchcard.io/merchant/billing',
+              billing_portal_url: 'https://www.localpunchcard.io/merchant/billing',
             })
           }
         }

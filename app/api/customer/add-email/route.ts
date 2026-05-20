@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
     })
     await sendTransactional('customerWelcome', email, {
       first_name: profile?.display_name ?? 'there',
-      wallet_url: 'https://localpunchcard.io/wallet',
+      wallet_url: 'https://www.localpunchcard.io/wallet',
     })
   }
 

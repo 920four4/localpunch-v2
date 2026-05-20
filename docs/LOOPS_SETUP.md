@@ -176,8 +176,8 @@ loops transactional send \
   --var first_name=Z \
   --var business_name="Test Coffee Co" \
   --var plan_label="Monthly (\$60/mo)" \
-  --var dashboard_url="https://localpunchcard.io/merchant" \
-  --var qr_url="https://localpunchcard.io/merchant/qr"
+  --var dashboard_url="https://www.localpunchcard.io/merchant" \
+  --var qr_url="https://www.localpunchcard.io/merchant/qr"
 ```
 
 If it arrives from `localpunch@920four.com` with the right content, you're
