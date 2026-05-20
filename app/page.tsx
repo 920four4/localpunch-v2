@@ -200,7 +200,13 @@ function Header() {
           >
             Sign in
           </Link>
-          <Link href="/login?role=business" className="nb-btn-primary text-sm px-4 py-2">
+          <Link
+            href="/login?role=business"
+            className="nb-btn-primary text-sm px-4 py-2"
+            data-ga-event="cta_click"
+            data-ga-location="home_header"
+            data-ga-label="start_free"
+          >
             Start free
           </Link>
         </nav>
@@ -242,12 +248,18 @@ function Hero() {
             <Link
               href="/login?role=business"
               className="nb-btn-primary w-full sm:w-auto text-base font-semibold px-7 py-3.5"
+              data-ga-event="cta_click"
+              data-ga-location="home_hero"
+              data-ga-label="setup_my_shop"
             >
               Set up my shop &mdash; free to start
             </Link>
             <Link
               href="/how-it-works"
               className="lp-btn-quiet w-full sm:w-auto text-base px-7 py-3.5"
+              data-ga-event="cta_click"
+              data-ga-location="home_hero"
+              data-ga-label="how_it_works"
             >
               See how it works
             </Link>
@@ -769,6 +781,9 @@ function ValueMath() {
           <Link
             href="/login?role=business"
             className="nb-btn-primary text-base font-semibold px-7 py-3.5"
+            data-ga-event="cta_click"
+            data-ga-location="home_value_math"
+            data-ga-label="setup_my_shop"
           >
             Set up my shop &mdash; free to start
           </Link>
@@ -925,6 +940,9 @@ function PricingCard({
         className={`mt-7 ${
           highlight ? 'nb-btn-primary' : 'nb-btn-dark'
         } font-semibold py-3`}
+        data-ga-event="cta_click"
+        data-ga-location="home_pricing"
+        data-ga-label={highlight ? 'pricing_yearly' : 'pricing_monthly'}
       >
         {cta} &rarr;
       </Link>
@@ -995,12 +1013,18 @@ function FinalCTA() {
           <Link
             href="/login?role=business"
             className="nb-btn-primary w-full sm:w-auto text-base font-semibold px-7 py-3.5"
+            data-ga-event="cta_click"
+            data-ga-location="home_final_cta"
+            data-ga-label="setup_my_shop"
           >
             Set up my shop &mdash; free to start
           </Link>
           <Link
             href="/login"
             className="w-full sm:w-auto text-white/80 hover:text-white font-medium px-7 py-3.5 underline underline-offset-4"
+            data-ga-event="cta_click"
+            data-ga-location="home_final_cta"
+            data-ga-label="sign_in"
           >
             I already have an account
           </Link>

@@ -78,7 +78,11 @@ export async function POST(request: NextRequest) {
     subscription_data: {
       metadata: { business_id: business.id, user_id: user.id },
     },
-    metadata: { business_id: business.id, user_id: user.id },
+    metadata: {
+      business_id: business.id,
+      user_id: user.id,
+      interval,
+    },
   })
 
   if (!session.url) {

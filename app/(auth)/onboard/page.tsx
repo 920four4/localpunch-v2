@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { trackEvent, trackSignUp } from '@/lib/analytics/client'
+import { AnalyticsEvents } from '@/lib/analytics/events'
 import { toast } from 'sonner'
 import type { UserRole } from '@/lib/types'
 
@@ -66,6 +68,10 @@ export default function OnboardPage() {
       }
     }
 
+    trackSignUp(role === 'merchant' ? 'merchant_onboard' : 'customer_onboard', role)
+    if (role === 'merchant') {
+      trackEvent(AnalyticsEvents.BUSINESS_CREATED, { source: 'onboard' })
+    }
     setLoading(false)
     router.push(role === 'merchant' ? '/merchant' : '/wallet')
   }

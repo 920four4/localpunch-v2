@@ -4,6 +4,8 @@ import { Suspense, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { trackEvent, trackLogin } from '@/lib/analytics/client'
+import { AnalyticsEvents } from '@/lib/analytics/events'
 import { toast } from 'sonner'
 
 type Tab = 'customer' | 'business'
@@ -58,7 +60,13 @@ function LoginInner() {
     const { error } = await supabase.auth.signInWithOtp({ phone: e164(phone) })
     setLoading(false)
     if (error) toast.error(error.message)
-    else setStep('otp')
+    else {
+      trackEvent(AnalyticsEvents.LOGIN, {
+        method: 'sms_otp_sent',
+        user_role: 'customer',
+      })
+      setStep('otp')
+    }
   }
 
   async function handleVerifySms(e: React.FormEvent) {
@@ -72,6 +80,7 @@ function LoginInner() {
     setLoading(false)
     if (error) toast.error('Wrong code — check your SMS and try again.')
     else {
+      trackLogin('sms', 'customer')
       router.push('/wallet')
       router.refresh()
     }
@@ -89,7 +98,13 @@ function LoginInner() {
     })
     setLoading(false)
     if (error) toast.error(error.message)
-    else setStep('sent')
+    else {
+      trackEvent(AnalyticsEvents.LOGIN, {
+        method: 'magic_link_sent',
+        user_role: 'merchant',
+      })
+      setStep('sent')
+    }
   }
 
   function switchTab(t: Tab) {

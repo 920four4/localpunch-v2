@@ -1,3 +1,4 @@
+import { BillingSuccessTracker } from '@/components/analytics/billing-success-tracker'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { BillingActions, PlanPicker } from './billing-client'
@@ -45,6 +46,7 @@ export default async function BillingPage({
 
   return (
     <div className="space-y-7 max-w-3xl">
+      <BillingSuccessTracker />
       <div>
         <h1 className="page-header text-2xl">Billing</h1>
         <p className="text-sm text-[#6B7280] mt-0.5">

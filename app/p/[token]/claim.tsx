@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { trackEvent } from '@/lib/analytics/client'
+import { AnalyticsEvents } from '@/lib/analytics/events'
 import { toast } from 'sonner'
 
 type Role = 'customer' | 'merchant' | 'admin' | null
@@ -143,6 +145,17 @@ export default function ClaimPunch({
         return
       }
       setResult(data as PunchResult)
+      trackEvent(AnalyticsEvents.CARD_CLAIMED, {
+        business_name: business.name,
+        program_name: program.name,
+        punch_count: data.punch_count,
+        is_complete: data.is_complete,
+      })
+      trackEvent(AnalyticsEvents.PUNCH_RECORDED, {
+        source: 'customer_qr',
+        business_name: business.name,
+        program_name: program.name,
+      })
       setStep('done')
     } catch {
       setLoading(false)

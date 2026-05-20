@@ -1,5 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import Stripe from 'stripe'
+import {
+  trackServerChurn,
+  trackServerPaymentFailed,
+  trackServerPurchase,
+} from '@/lib/analytics/server'
 import { createAdminClient } from '@/lib/supabase/server'
 import { getStripe, isLiveStatus } from '@/lib/stripe'
 import {
@@ -210,6 +215,12 @@ export async function POST(request: NextRequest) {
         first_name: owner.firstName ?? 'there',
         business_name: prev?.name ?? 'your shop',
       })
+      await trackServerChurn({
+        stripeCustomerId: customerId,
+        userId: prev?.owner_id,
+        businessId: prev?.id,
+        businessName: prev?.name,
+      })
     }
   }
 
@@ -234,6 +245,25 @@ export async function POST(request: NextRequest) {
               ? session.subscription
               : session.subscription.id
           await syncSubscriptionById(subId)
+
+          const customerId =
+            typeof session.customer === 'string'
+              ? session.customer
+              : session.customer?.id
+          const interval =
+            session.metadata?.interval === 'year' ? 'year' : 'month'
+          const valueCents = session.amount_total ?? (interval === 'year' ? 60000 : 6000)
+          if (customerId) {
+            await trackServerPurchase({
+              transactionId: session.id,
+              valueCents,
+              interval,
+              stripeCustomerId: customerId,
+              userId: session.metadata?.user_id,
+              businessId: session.metadata?.business_id,
+              isRenewal: false,
+            })
+          }
         }
         break
       }
@@ -254,17 +284,38 @@ export async function POST(request: NextRequest) {
           typeof subscriptionRef === 'string' ? subscriptionRef : subscriptionRef?.id
         if (subId) await syncSubscriptionById(subId)
 
-        // Extend LTV + last payment props on Loops
         const customerId =
           typeof invoice.customer === 'string'
             ? invoice.customer
             : invoice.customer?.id
+
+        // Extend LTV + last payment props on Loops
         if (customerId) {
           const info = await getBusinessByStripeIds(customerId)
           if (info?.email) {
             await syncContact(info.email, {
               lastPaymentAt: new Date().toISOString(),
               lifetimeValueCents: invoice.amount_paid ?? undefined,
+            })
+          }
+
+          // Renewals only — initial purchase tracked on checkout.session.completed
+          const billingReason = (invoice as Stripe.Invoice & { billing_reason?: string })
+            .billing_reason
+          if (billingReason === 'subscription_cycle' && invoice.amount_paid) {
+            const line0 = invoice.lines?.data[0] as
+              | { price?: { recurring?: { interval?: string } } }
+              | undefined
+            const interval =
+              line0?.price?.recurring?.interval === 'year' ? 'year' : 'month'
+            await trackServerPurchase({
+              transactionId: invoice.id,
+              valueCents: invoice.amount_paid,
+              interval,
+              stripeCustomerId: customerId,
+              userId: info?.business.owner_id,
+              businessId: info?.business.id,
+              isRenewal: true,
             })
           }
         }
@@ -299,6 +350,12 @@ export async function POST(request: NextRequest) {
               business_name: info.business.name,
               amount_due: ((invoice.amount_due ?? 0) / 100).toFixed(2),
               billing_portal_url: 'https://www.localpunchcard.io/merchant/billing',
+            })
+            await trackServerPaymentFailed({
+              stripeCustomerId: customerId,
+              userId: info.business.owner_id,
+              businessId: info.business.id,
+              amountDueCents: invoice.amount_due ?? 0,
             })
           }
         }

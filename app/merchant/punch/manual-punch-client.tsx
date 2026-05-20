@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { trackEvent } from '@/lib/analytics/client'
+import { AnalyticsEvents } from '@/lib/analytics/events'
 import { toast } from 'sonner'
 
 type Program = {
@@ -95,6 +97,11 @@ export default function ManualPunchClient({
         return
       }
       setResult(data as LastResult)
+      trackEvent(AnalyticsEvents.PUNCH_RECORDED, {
+        source: 'merchant_manual',
+        program_id: programId,
+        is_complete: data.is_complete,
+      })
       toast.success(data.message)
       setPhone('')
       setEmail('')
@@ -125,6 +132,10 @@ export default function ManualPunchClient({
         return
       }
       setUndone(true)
+      trackEvent(AnalyticsEvents.PUNCH_REVERSED, {
+        card_id: result.card_id,
+        program_id: programId,
+      })
       toast.success('Punch undone')
     } catch {
       setUndoing(false)

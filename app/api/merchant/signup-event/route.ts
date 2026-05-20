@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server'
+import { trackServerSignUp } from '@/lib/analytics/server'
 import { createClient } from '@/lib/supabase/server'
 import { sendEvent, syncContact } from '@/lib/loops'
 
@@ -58,6 +59,12 @@ export async function POST(request: NextRequest) {
   await sendEvent(user.email, 'merchant_signed_up', {
     business_name: business.name,
     business_slug: business.slug,
+  })
+
+  await trackServerSignUp({
+    userId: user.id,
+    businessId: business.id,
+    businessName: business.name,
   })
 
   return NextResponse.json({ ok: true })

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { trackBeginCheckout } from '@/lib/analytics/client'
 
 type LoadingState = 'month' | 'year' | 'portal' | null
 
@@ -20,6 +21,7 @@ export function PlanPicker({ hasCustomer }: { hasCustomer: boolean }) {
 
   async function checkout(interval: 'month' | 'year') {
     setLoading(interval)
+    trackBeginCheckout(interval, interval === 'year' ? 600 : 60)
     const { ok, data } = await postJson('/api/stripe/checkout', { interval })
     if (ok && data.url) {
       window.location.href = data.url

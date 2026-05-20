@@ -1,6 +1,8 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { trackEvent } from '@/lib/analytics/client'
+import { AnalyticsEvents } from '@/lib/analytics/events'
 import { toast } from 'sonner'
 import { extractRedeemToken } from '@/lib/qr/tokens'
 
@@ -24,6 +26,15 @@ type Tab = 'scan' | 'lookup'
 export default function RedeemClient() {
   const [tab, setTab] = useState<Tab>('scan')
   const [result, setResult] = useState<RedeemResult | null>(null)
+
+  function handleRedeemed(r: RedeemResult) {
+    trackEvent(AnalyticsEvents.REDEEM_COMPLETED, {
+      business_name: r.business_name,
+      program_name: r.program_name,
+      redeem_tab: tab,
+    })
+    setResult(r)
+  }
 
   if (result) {
     return (
@@ -54,9 +65,9 @@ export default function RedeemClient() {
       </div>
 
       {tab === 'scan' ? (
-        <ScanTab onRedeemed={setResult} />
+        <ScanTab onRedeemed={handleRedeemed} />
       ) : (
-        <LookupTab onRedeemed={setResult} />
+        <LookupTab onRedeemed={handleRedeemed} />
       )}
 
       <details className="nb-card-flat p-4 text-sm text-[#6B7280]">

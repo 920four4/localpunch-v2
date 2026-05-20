@@ -54,7 +54,13 @@ export function MarketingHeader({ active }: { active?: 'blog' | 'pricing' }) {
           >
             Sign in
           </Link>
-          <Link href="/login?role=business" className="nb-btn-primary text-sm px-4 py-2">
+          <Link
+            href="/login?role=business"
+            className="nb-btn-primary text-sm px-4 py-2"
+            data-ga-event="cta_click"
+            data-ga-location="header"
+            data-ga-label="start_free"
+          >
             Start free
           </Link>
         </nav>
@@ -171,6 +177,9 @@ export function MarketingCTA({
         <Link
           href="/login?role=business"
           className="inline-block mt-8 bg-[#FFE566] text-[#1a1a1a] rounded-full px-7 py-3.5 text-sm font-bold hover:bg-[#f5d84d] transition"
+          data-ga-event="cta_click"
+          data-ga-location="marketing_cta"
+          data-ga-label="start_my_shop"
         >
           Start my shop — free to build
         </Link>

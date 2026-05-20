@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { trackEvent } from '@/lib/analytics/client'
+import { AnalyticsEvents } from '@/lib/analytics/events'
 import { toast } from 'sonner'
 
 function slugify(s: string) {
@@ -40,6 +42,10 @@ export default function SetupBusinessPage() {
     // Fire the Loops onboarding event server-side. Non-blocking — if the
     // Loops API is down we still send the merchant to billing.
     if (inserted?.id) {
+      trackEvent(AnalyticsEvents.BUSINESS_CREATED, {
+        business_id: inserted.id,
+        source: 'merchant_setup',
+      })
       fetch('/api/merchant/signup-event', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -1,3 +1,4 @@
+import { WalletViewTracker } from '@/components/analytics/wallet-view-tracker'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import type { PunchCard } from '@/lib/types'
@@ -25,6 +26,7 @@ export default async function WalletPage() {
 
   return (
     <div className="space-y-6">
+      <WalletViewTracker cardCount={(cards?.length ?? 0)} />
       <div>
         <h1 className="page-header text-2xl">My Cards</h1>
         <p className="text-sm text-[#6B7280] mt-0.5">Scan a QR code at a business to collect punches.</p>

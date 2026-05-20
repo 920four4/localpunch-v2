@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { trackEvent } from '@/lib/analytics/client'
+import { AnalyticsEvents } from '@/lib/analytics/events'
 import { toast } from 'sonner'
 
 export default function NewProgramPage() {
@@ -40,6 +42,11 @@ export default function NewProgramPage() {
 
     setSaving(false)
     if (error) { toast.error(error.message); return }
+    trackEvent(AnalyticsEvents.PROGRAM_CREATED, {
+      business_id: business.id,
+      punches_required: form.punches_required,
+      program_name: form.name,
+    })
     toast.success('Program created!')
     router.push('/merchant/programs')
   }
