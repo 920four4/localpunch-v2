@@ -37,6 +37,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description = post.seo_description || post.excerpt || undefined
   const canonical = `${SITE_URL}/blog/${post.slug}`
 
+  const coverImage = post.cover_image_url
+    ? [{ url: post.cover_image_url, width: 1200, height: 630, alt: title }]
+    : undefined
+
   return {
     title: `${title} — LocalPunch`,
     description,
@@ -49,13 +53,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: 'article',
       publishedTime: post.published_at ?? undefined,
       authors: [post.author_name],
-      images: post.cover_image_url ? [{ url: post.cover_image_url }] : undefined,
+      ...(coverImage ? { images: coverImage } : {}),
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: post.cover_image_url ? [post.cover_image_url] : undefined,
+      ...(coverImage ? { images: coverImage.map((image) => image.url) } : {}),
     },
   }
 }
