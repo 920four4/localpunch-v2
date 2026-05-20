@@ -63,6 +63,8 @@ export async function proxy(request: NextRequest) {
     pathname === '/llms.txt' ||
     pathname === '/robots.txt' ||
     pathname === '/sitemap.xml' ||
+    pathname === '/opengraph-image' ||
+    pathname === '/twitter-image' ||
     pathname === '/favicon.ico' ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/manifest') ||
