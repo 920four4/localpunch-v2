@@ -66,6 +66,8 @@ export async function proxy(request: NextRequest) {
     pathname === '/opengraph-image' ||
     pathname === '/twitter-image' ||
     pathname === '/favicon.ico' ||
+    pathname === '/icon' ||
+    pathname === '/apple-icon' ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/manifest') ||
     pathname.startsWith('/icons/') ||

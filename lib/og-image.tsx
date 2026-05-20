@@ -12,22 +12,35 @@ const MINT = '#A8E6CF'
 const MUTED = '#5A554C'
 const SUBTLE = '#9A9387'
 const BORDER = '#E7E6DF'
-const CARD_BG = '#FFFFFF'
 
-async function loadGoogleFont(family: string, weight: number) {
-  const css = await (
-    await fetch(
-      `https://fonts.googleapis.com/css2?family=${family}:wght@${weight}&display=swap`,
-      { cache: 'force-cache' },
-    )
-  ).text()
-
-  const match = css.match(/src: url\((.+?)\) format\('(?:opentype|truetype|woff2?)'\)/)
-  if (!match?.[1]) {
-    throw new Error(`Failed to load font ${family} ${weight}`)
-  }
-
-  return fetch(match[1]).then((res) => res.arrayBuffer())
+/** Logo mark — Satori does not render emoji reliably; use vector shapes + LP */
+function LogoMark({ size = 72 }: { size?: number }) {
+  const fontSize = Math.round(size * 0.38)
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: size,
+        height: size,
+        background: YELLOW,
+        border: '2px solid #E0CF4A',
+        borderRadius: Math.round(size * 0.22),
+      }}
+    >
+      <span
+        style={{
+          fontSize,
+          fontWeight: 800,
+          color: INK,
+          letterSpacing: '-0.04em',
+        }}
+      >
+        LP
+      </span>
+    </div>
+  )
 }
 
 function PunchCardPreview() {
@@ -41,10 +54,9 @@ function PunchCardPreview() {
         flexDirection: 'column',
         width: 340,
         padding: 28,
-        background: CARD_BG,
+        background: '#FFFFFF',
         border: `2px solid ${INK}`,
         borderRadius: 16,
-        boxShadow: '6px 6px 0 0 #1a1a1a',
       }}
     >
       <div
@@ -73,7 +85,6 @@ function PunchCardPreview() {
               fontWeight: 700,
               color: INK,
               marginTop: 4,
-              fontFamily: 'Space Grotesk',
             }}
           >
             Free Taco Tuesday
@@ -114,14 +125,13 @@ function PunchCardPreview() {
                 height: 48,
                 borderRadius: 999,
                 background: filled ? YELLOW : '#F5F4EF',
-                border: filled ? `2px solid #E0CF4A` : `1px solid ${BORDER}`,
+                border: filled ? '2px solid #E0CF4A' : `1px solid ${BORDER}`,
                 color: filled ? INK : '#C9C5BA',
                 fontSize: filled ? 20 : 14,
                 fontWeight: 700,
-                fontFamily: 'Space Grotesk',
               }}
             >
-              {filled ? '✓' : String(i + 1)}
+              {filled ? '●' : String(i + 1)}
             </div>
           )
         })}
@@ -129,15 +139,16 @@ function PunchCardPreview() {
 
       <div
         style={{
+          display: 'flex',
+          justifyContent: 'center',
           marginTop: 20,
           paddingTop: 16,
-          borderTop: `1px solid #EDEBE3`,
-          textAlign: 'center',
+          borderTop: '1px solid #EDEBE3',
           fontSize: 14,
           color: MUTED,
         }}
       >
-        3 more visits →{' '}
+        <span>3 more visits → </span>
         <span style={{ fontWeight: 700, color: INK }}>1 free taco</span>
       </div>
     </div>
@@ -145,11 +156,6 @@ function PunchCardPreview() {
 }
 
 export async function createOgImage() {
-  const [spaceGroteskBold, spaceGroteskMedium] = await Promise.all([
-    loadGoogleFont('Space+Grotesk', 700),
-    loadGoogleFont('Space+Grotesk', 500),
-  ])
-
   return new ImageResponse(
     (
       <div
@@ -159,7 +165,6 @@ export async function createOgImage() {
           height: '100%',
           background: WARM,
           padding: '56px 64px',
-          fontFamily: 'Space Grotesk',
         }}
       >
         <div
@@ -179,25 +184,11 @@ export async function createOgImage() {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 72,
-                  height: 72,
-                  background: YELLOW,
-                  border: '2px solid #E0CF4A',
-                  borderRadius: 16,
-                  fontSize: 36,
-                }}
-              >
-                🥊
-              </div>
+              <LogoMark size={72} />
               <span
                 style={{
                   fontSize: 56,
-                  fontWeight: 700,
+                  fontWeight: 800,
                   color: INK,
                   letterSpacing: '-0.03em',
                 }}
@@ -206,37 +197,43 @@ export async function createOgImage() {
               </span>
             </div>
 
-            <p
+            <div
               style={{
+                display: 'flex',
+                flexDirection: 'column',
                 marginTop: 28,
-                fontSize: 34,
-                fontWeight: 700,
-                lineHeight: 1.15,
-                color: INK,
-                letterSpacing: '-0.02em',
               }}
             >
-              Bring customers back
-              <br />
-              <span style={{ position: 'relative' }}>
-                without the busywork
-                <span
-                  style={{
-                    position: 'absolute',
-                    left: 0,
-                    right: 0,
-                    bottom: 4,
-                    height: 14,
-                    background: YELLOW,
-                    zIndex: -1,
-                    borderRadius: 4,
-                  }}
-                />
+              <span
+                style={{
+                  fontSize: 34,
+                  fontWeight: 800,
+                  lineHeight: 1.15,
+                  color: INK,
+                  letterSpacing: '-0.02em',
+                }}
+              >
+                Bring customers back
               </span>
-            </p>
+              <span
+                style={{
+                  fontSize: 34,
+                  fontWeight: 800,
+                  lineHeight: 1.15,
+                  color: INK,
+                  letterSpacing: '-0.02em',
+                  background: YELLOW,
+                  padding: '0 8px',
+                  marginTop: 4,
+                }}
+              >
+                without the busywork
+              </span>
+            </div>
 
-            <p
+            <div
               style={{
+                display: 'flex',
                 marginTop: 20,
                 fontSize: 22,
                 fontWeight: 500,
@@ -247,7 +244,7 @@ export async function createOgImage() {
             >
               Digital punch cards for local businesses — no app downloads, no
               hardware, flat $60/mo.
-            </p>
+            </div>
 
             <span
               style={{
@@ -265,22 +262,6 @@ export async function createOgImage() {
         </div>
       </div>
     ),
-    {
-      ...OG_SIZE,
-      fonts: [
-        {
-          name: 'Space Grotesk',
-          data: spaceGroteskMedium,
-          style: 'normal',
-          weight: 500,
-        },
-        {
-          name: 'Space Grotesk',
-          data: spaceGroteskBold,
-          style: 'normal',
-          weight: 700,
-        },
-      ],
-    },
+    OG_SIZE,
   )
 }

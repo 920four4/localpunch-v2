@@ -32,6 +32,14 @@ export const metadata: Metadata = {
   title: 'LocalPunch — Digital Punch Cards for Local Businesses',
   description: defaultDescription,
   manifest: '/manifest.json',
+  icons: {
+    icon: [
+      { url: '/icon', type: 'image/png', sizes: '32x32' },
+      { url: '/apple-icon', type: 'image/png', sizes: '180x180' },
+    ],
+    apple: [{ url: '/apple-icon', sizes: '180x180', type: 'image/png' }],
+    shortcut: '/icon',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
@@ -47,10 +55,11 @@ export const metadata: Metadata = {
     description: defaultDescription,
     images: [
       {
-        url: '/opengraph-image',
+        url: `${SITE_URL}/opengraph-image`,
         width: 1200,
         height: 630,
         alt: 'LocalPunch — Digital punch cards for local businesses',
+        type: 'image/png',
       },
     ],
   },
@@ -58,7 +67,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'LocalPunch — Digital Punch Cards for Local Businesses',
     description: defaultDescription,
-    images: ['/twitter-image'],
+    images: [`${SITE_URL}/twitter-image`],
   },
 }
 
