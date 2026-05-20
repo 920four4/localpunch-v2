@@ -158,6 +158,14 @@ export default function OnboardPage() {
                 ? 'Create my shop'
                 : 'Get started'}
             </button>
+
+            {role === 'merchant' && (
+              <p className="text-xs text-[#9CA3AF] text-center">
+                Next, we&rsquo;ll walk you through creating a reward and going
+                live &mdash; a checklist on your dashboard, about 2 minutes.
+                It&rsquo;s free until you go live.
+              </p>
+            )}
           </form>
         </div>
       </main>

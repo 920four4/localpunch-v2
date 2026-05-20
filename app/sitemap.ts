@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { createClient } from '@/lib/supabase/server'
 
-const SITE_URL = 'https://localpunch-v2.vercel.app'
+const SITE_URL = 'https://localpunchcard.io'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0

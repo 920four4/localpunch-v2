@@ -17,7 +17,7 @@ Two methods are accepted:
 
 ## Endpoints
 
-Base URL: `https://localpunch-v2.vercel.app`
+Base URL: `https://localpunchcard.io`
 
 ### `POST /api/admin/blog`
 Create a new post.
@@ -66,7 +66,7 @@ Hard delete.
 ```bash
 TOKEN="<BLOG_API_TOKEN>"
 
-curl -X POST https://localpunch-v2.vercel.app/api/admin/blog \
+curl -X POST https://localpunchcard.io/api/admin/blog \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d @- <<'EOF'
@@ -83,7 +83,7 @@ EOF
 ### Publish from an AI agent (Cursor / Claude Code / scripts)
 
 ```ts
-const res = await fetch('https://localpunch-v2.vercel.app/api/admin/blog', {
+const res = await fetch('https://localpunchcard.io/api/admin/blog', {
   method: 'POST',
   headers: {
     Authorization: `Bearer ${process.env.BLOG_API_TOKEN}`,

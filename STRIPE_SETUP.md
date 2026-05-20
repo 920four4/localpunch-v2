@@ -45,7 +45,7 @@ The webhook tells us when payment succeeds, renews, or fails.
 Dashboard → **Developers → Webhooks → + Add endpoint**.
 
 - **Endpoint URL:** `https://your-domain.com/api/stripe/webhook`
-  - Production: `https://localpunch-v2.vercel.app/api/stripe/webhook`
+  - Production: `https://localpunchcard.io/api/stripe/webhook`
   - Local dev: use the Stripe CLI (see below)
 - **Listen to:** Events on your account
 - **Select events** (click "+ Select events"):
