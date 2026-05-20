@@ -45,7 +45,7 @@ export async function proxy(request: NextRequest) {
   const redirect = (url: URL) =>
     forwardAuthCookies(supabaseResponse, NextResponse.redirect(url))
 
-  // Public routes — landing, login, onboard, blog, SEO, legal, assets
+  // Public routes — landing, login, onboard, blog, SEO/marketing, legal, assets
   const isPublic =
     pathname === '/' ||
     pathname === '/login' ||
@@ -53,6 +53,12 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/auth/') ||
     pathname.startsWith('/api/') ||
     pathname.startsWith('/blog') ||
+    pathname.startsWith('/for/') ||
+    pathname.startsWith('/compare') ||
+    pathname === '/pricing' ||
+    pathname === '/features' ||
+    pathname === '/how-it-works' ||
+    pathname.startsWith('/tools/') ||
     pathname.startsWith('/p/') ||
     pathname === '/llms.txt' ||
     pathname === '/robots.txt' ||

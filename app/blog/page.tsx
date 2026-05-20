@@ -6,7 +6,8 @@ import { formatDate, type BlogPostSummary } from '@/lib/blog'
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-const SITE_URL = 'https://www.localpunchcard.io'
+import { MarketingFooter, MarketingHeader } from '@/components/marketing/shell'
+import { SITE_URL } from '@/lib/site'
 
 export const metadata: Metadata = {
   title: 'Blog — LocalPunch',
@@ -45,7 +46,7 @@ export default async function BlogIndexPage() {
 
   return (
     <div className="min-h-screen bg-[#FAFAF8]">
-      <Header />
+      <MarketingHeader active="blog" />
       <main className="max-w-4xl mx-auto px-5 py-12 lg:py-20">
         <header className="mb-10 lg:mb-14">
           <p className="text-xs uppercase tracking-wider text-[#6B7280] mb-2 font-semibold">
@@ -72,7 +73,7 @@ export default async function BlogIndexPage() {
           </ul>
         )}
       </main>
-      <Footer />
+      <MarketingFooter />
     </div>
   )
 }
@@ -157,59 +158,3 @@ function ComingSoon() {
   )
 }
 
-function Header() {
-  return (
-    <header className="border-b border-[#1a1a1a]/10 bg-white sticky top-0 z-10">
-      <div className="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between">
-        <Link
-          href="/"
-          className="flex items-center gap-2 font-bold"
-          style={{ fontFamily: 'var(--font-space-grotesk)' }}
-        >
-          <span className="inline-flex items-center justify-center w-7 h-7 bg-[#FFE566] rounded-md text-sm">
-            🥊
-          </span>
-          LocalPunch
-        </Link>
-        <nav className="flex items-center gap-5 text-sm">
-          <Link href="/blog" className="font-semibold text-[#1a1a1a]">
-            Blog
-          </Link>
-          <Link
-            href="/#pricing"
-            className="text-[#6B7280] hover:text-[#1a1a1a]"
-          >
-            Pricing
-          </Link>
-          <Link
-            href="/login?role=business"
-            className="bg-[#1a1a1a] text-white rounded-full px-4 py-1.5 text-sm font-semibold hover:bg-black transition"
-          >
-            Start my shop
-          </Link>
-        </nav>
-      </div>
-    </header>
-  )
-}
-
-function Footer() {
-  return (
-    <footer className="border-t border-[#1a1a1a]/10 py-10 mt-20">
-      <div className="max-w-5xl mx-auto px-5 text-sm text-[#6B7280] flex flex-col sm:flex-row justify-between gap-3">
-        <p>© {new Date().getFullYear()} LocalPunch. Made for local shops.</p>
-        <div className="flex gap-5">
-          <Link href="/blog" className="hover:text-[#1a1a1a]">
-            Blog
-          </Link>
-          <Link href="/privacy-policy" className="hover:text-[#1a1a1a]">
-            Privacy
-          </Link>
-          <Link href="/terms" className="hover:text-[#1a1a1a]">
-            Terms
-          </Link>
-        </div>
-      </div>
-    </footer>
-  )
-}

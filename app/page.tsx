@@ -1,15 +1,86 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { JsonLd } from '@/components/marketing/shell'
+import { SITE_URL } from '@/lib/site'
 
 export const metadata: Metadata = {
-  title: 'LocalPunch — Bring More Customers Back, Without the Busywork',
+  title: 'Digital Punch Cards for Small Businesses · LocalPunch',
   description:
-    'A digital punch card that lives on the phone your customers already carry. No app to download, no hardware to buy, nothing new to learn. Set it up in minutes. $60/mo or $600/yr.',
+    'Replace paper punch cards with a QR loyalty program customers cannot lose. $60/mo unlimited everything, no app downloads. Set up in 2 minutes.',
+  alternates: { canonical: SITE_URL },
+  openGraph: {
+    title: 'Digital Punch Cards for Small Businesses · LocalPunch',
+    description:
+      'QR loyalty for local shops. No app, no hardware, flat $60/month unlimited.',
+    url: SITE_URL,
+    siteName: 'LocalPunch',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Digital Punch Cards for Small Businesses',
+    description: 'No app downloads. Flat $60/mo. Built for coffee shops, taquerias, barbershops, and more.',
+  },
 }
 
+const FAQ_ITEMS = [
+  {
+    q: 'Do I need a new iPad or register?',
+    a: 'No. Any phone or tablet with a web browser works. Most owners just use their own phone at the counter.',
+  },
+  {
+    q: 'Do my customers have to download an app?',
+    a: 'Never. They scan a QR code, enter their phone number, and get a card that lives in their browser. Most save it to their home screen so it acts like an app without being one.',
+  },
+  {
+    q: 'What stops people from cheating the punches?',
+    a: 'The QR code on your counter rotates every 5 minutes, so a screenshot is useless within minutes. Each customer can only collect one punch per day, per program.',
+  },
+  {
+    q: 'What if a customer forgets their phone?',
+    a: 'You can add a punch by phone number from your merchant screen. Their card updates the next time they open it.',
+  },
+  {
+    q: 'Is there a free trial or free plan?',
+    a: 'Signing up and building your entire program is free. You only pay once you flip the shop live. It is $60/month or $600/year, everything unlimited, cancel anytime.',
+  },
+  {
+    q: 'What if I am not techy?',
+    a: 'If you can send a text message, you can run LocalPunch. At the counter the merchant screen is basically one button.',
+  },
+]
+
 export default function LandingPage() {
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: FAQ_ITEMS.map(item => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: { '@type': 'Answer', text: item.a },
+    })),
+  }
+
+  const appJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'LocalPunch',
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+    offers: {
+      '@type': 'Offer',
+      price: '60',
+      priceCurrency: 'USD',
+    },
+    description:
+      'Digital punch card loyalty for local businesses. No customer app download required.',
+    url: SITE_URL,
+  }
+
   return (
     <div className="min-h-screen bg-[#FAFAF8] text-[#1a1a1a]">
+      <JsonLd data={faqJsonLd} />
+      <JsonLd data={appJsonLd} />
       <Header />
       <main>
         <Hero />
@@ -106,16 +177,22 @@ function Header() {
         </Link>
         <nav className="flex items-center gap-1 sm:gap-4 text-sm">
           <Link
-            href="#how-it-works"
+            href="/how-it-works"
             className="hidden sm:inline text-[#5A554C] hover:text-[#1a1a1a] px-2 py-1.5 font-medium"
           >
             How it works
           </Link>
           <Link
-            href="#pricing"
+            href="/pricing"
             className="hidden sm:inline text-[#5A554C] hover:text-[#1a1a1a] px-2 py-1.5 font-medium"
           >
             Pricing
+          </Link>
+          <Link
+            href="/blog"
+            className="hidden sm:inline text-[#5A554C] hover:text-[#1a1a1a] px-2 py-1.5 font-medium"
+          >
+            Blog
           </Link>
           <Link
             href="/login"
@@ -146,8 +223,8 @@ function Hero() {
             className="mt-5 text-[2.5rem] sm:text-5xl lg:text-[3.4rem] font-bold tracking-tight leading-[1.06]"
             style={{ fontFamily: 'var(--font-space-grotesk)' }}
           >
-            Bring more customers
-            <br className="hidden sm:block" /> back &mdash;{' '}
+            Digital punch cards for
+            <br className="hidden sm:block" /> local businesses &mdash;{' '}
             <span className="relative whitespace-nowrap">
               <span className="relative z-10">without the busywork.</span>
               <span className="absolute left-0 right-0 bottom-1 h-3 bg-[#FFE566] -z-0 rounded-sm" />
@@ -169,7 +246,7 @@ function Hero() {
               Set up my shop &mdash; free to start
             </Link>
             <Link
-              href="#how-it-works"
+              href="/how-it-works"
               className="lp-btn-quiet w-full sm:w-auto text-base px-7 py-3.5"
             >
               See how it works
@@ -860,32 +937,7 @@ function PricingCard({
    ──────────────────────────────────────────────────────────── */
 
 function FAQ() {
-  const items = [
-    {
-      q: 'Do I need a new iPad or register?',
-      a: 'No. Any phone or tablet with a web browser works. Most owners just use their own phone at the counter.',
-    },
-    {
-      q: 'Do my customers have to download an app?',
-      a: 'Never. They scan a QR code, enter their phone number, and get a card that lives in their browser. Most save it to their home screen so it acts like an app without being one.',
-    },
-    {
-      q: 'What stops people from cheating the punches?',
-      a: 'The QR code on your counter rotates every 5 minutes, so a screenshot is useless within minutes. Each customer can only collect one punch per day, per program.',
-    },
-    {
-      q: 'What if a customer forgets their phone?',
-      a: 'You can add a punch by phone number from your merchant screen. Their card updates the next time they open it.',
-    },
-    {
-      q: 'Is there a free trial or free plan?',
-      a: 'Signing up and building your entire program — business, rewards, everything — is free. You only pay once you flip the shop live so customers can collect punches. It’s $60/month or $600/year (two months free), everything unlimited, cancel anytime from the Stripe billing portal.',
-    },
-    {
-      q: 'What if I’m not "techy"?',
-      a: 'If you can send a text message, you can run LocalPunch. At the counter the merchant screen is basically one button, and there’s a real person on email if you get stuck.',
-    },
-  ]
+  const items = FAQ_ITEMS
   return (
     <section className="px-5 py-16 sm:py-20">
       <div className="max-w-3xl mx-auto">
@@ -972,9 +1024,15 @@ function Footer() {
           <span className="font-bold text-[#1a1a1a]">LocalPunch</span>
           <span>© {new Date().getFullYear()}</span>
         </div>
-        <div className="flex items-center gap-5">
+        <div className="flex flex-wrap items-center justify-center gap-5">
+          <Link href="/for/coffee-shops" className="hover:text-[#1a1a1a]">
+            Coffee shops
+          </Link>
           <Link href="/blog" className="hover:text-[#1a1a1a]">
             Blog
+          </Link>
+          <Link href="/pricing" className="hover:text-[#1a1a1a]">
+            Pricing
           </Link>
           <Link href="/privacy-policy" className="hover:text-[#1a1a1a]">
             Privacy

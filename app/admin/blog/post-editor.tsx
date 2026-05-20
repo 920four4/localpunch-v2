@@ -28,6 +28,42 @@ export default function PostEditor({
   const [status, setStatus] = useState<BlogStatus>(post.status ?? 'draft')
   const [seoTitle, setSeoTitle] = useState(post.seo_title ?? '')
   const [seoDescription, setSeoDescription] = useState(post.seo_description ?? '')
+  const [aiTopic, setAiTopic] = useState('')
+  const [aiLoading, setAiLoading] = useState(false)
+
+  async function generateWithAi() {
+    if (!aiTopic.trim()) {
+      toast.error('Enter a topic first')
+      return
+    }
+    setAiLoading(true)
+    try {
+      const res = await fetch('/api/admin/blog/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          topic: aiTopic.trim(),
+          tone: 'educational',
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        toast.error(data.error || 'Generation failed')
+        return
+      }
+      const d = data.draft as Record<string, string | string[]>
+      if (typeof d.title === 'string') setTitle(d.title)
+      if (typeof d.slug === 'string') setSlug(d.slug)
+      if (typeof d.excerpt === 'string') setExcerpt(d.excerpt)
+      if (typeof d.content === 'string') setContent(d.content)
+      if (typeof d.seo_title === 'string') setSeoTitle(d.seo_title)
+      if (typeof d.seo_description === 'string') setSeoDescription(d.seo_description)
+      if (Array.isArray(d.tags)) setTags(d.tags.join(', '))
+      toast.success(`Draft generated (${data.model})`)
+    } finally {
+      setAiLoading(false)
+    }
+  }
 
   async function save(newStatus?: BlogStatus) {
     if (!title.trim()) {
@@ -149,6 +185,32 @@ export default function PostEditor({
           </button>
         </div>
       </div>
+
+      <details className="nb-card-flat p-4 bg-[#F4F4F0]">
+        <summary className="cursor-pointer font-semibold text-sm">
+          ✨ Generate draft with Claude (Opus)
+        </summary>
+        <p className="text-xs text-[#6B7280] mt-2 mb-3">
+          Requires <code className="text-[11px]">ANTHROPIC_API_KEY</code> on the server.
+          Human-voice educational posts with SEO fields pre-filled.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <input
+            value={aiTopic}
+            onChange={e => setAiTopic(e.target.value)}
+            placeholder="e.g. How nail salons can run a simple loyalty program"
+            className="flex-1 border-2 border-[#1a1a1a] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FFE566]"
+          />
+          <button
+            type="button"
+            onClick={generateWithAi}
+            disabled={aiLoading || isPending}
+            className="bg-[#1a1a1a] text-white rounded-full px-4 py-2 text-sm font-semibold hover:bg-black transition disabled:opacity-50 shrink-0"
+          >
+            {aiLoading ? 'Writing…' : 'Generate'}
+          </button>
+        </div>
+      </details>
 
       <Field label="Title">
         <input

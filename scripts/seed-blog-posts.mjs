@@ -1,6 +1,5 @@
 #!/usr/bin/env node
-// Seeds initial blog posts directly via the Supabase Management API.
-// Run once after the blog migration lands.
+// Seeds blog posts via Supabase Management API.
 //
 //   SUPABASE_ACCESS_TOKEN=sbp_... node scripts/seed-blog-posts.mjs
 
@@ -29,6 +28,13 @@ function sqlArray(arr) {
   return `ARRAY[${arr.map(t => sqlEscape(t)).join(',')}]::TEXT[]`
 }
 
+function loadSeed(filename) {
+  return fs.readFileSync(
+    new URL(`./blog-seeds/${filename}`, import.meta.url),
+    'utf8',
+  )
+}
+
 const posts = [
   {
     slug: 'coffee-shop-loyalty-program-setup',
@@ -41,10 +47,7 @@ const posts = [
       'How to Set Up a Loyalty Program for Your Coffee Shop in 10 Minutes (2026)',
     seo_description:
       'A practical, plain-English walkthrough to launch a working loyalty program for your coffee shop today — no app, no POS upgrade, no agency.',
-    content: fs.readFileSync(
-      new URL('./blog-seeds/coffee-shop-loyalty-program-setup.md', import.meta.url),
-      'utf8',
-    ),
+    content: loadSeed('coffee-shop-loyalty-program-setup.md'),
   },
   {
     slug: 'digital-punch-cards-vs-paper',
@@ -57,10 +60,55 @@ const posts = [
     seo_title: 'Digital Punch Cards vs Paper: Honest Comparison for Small Shops',
     seo_description:
       'An honest side-by-side of paper punch cards vs digital: what actually changes for your regulars, your staff, and your bottom line.',
-    content: fs.readFileSync(
-      new URL('./blog-seeds/digital-punch-cards-vs-paper.md', import.meta.url),
-      'utf8',
-    ),
+    content: loadSeed('digital-punch-cards-vs-paper.md'),
+  },
+  {
+    slug: 'barbershop-loyalty-strategy',
+    title: 'The best loyalty strategy for your barbershop (beyond just a punch card)',
+    excerpt:
+      'Match rewards to the haircut cycle, punch at the chair, and use your customer list on slow days — without overcomplicating loyalty.',
+    author_name: 'LocalPunch Team',
+    tags: ['barbershop', 'loyalty', 'guides'],
+    seo_title: 'Barbershop Loyalty Program Strategy That Actually Works',
+    seo_description:
+      'Practical barbershop loyalty tips: reward timing, staff training, and texting regulars when chairs are empty.',
+    content: loadSeed('barbershop-loyalty-strategy.md'),
+  },
+  {
+    slug: 'localpunch-vs-stamp-me',
+    title: 'LocalPunch vs Stamp Me: an honest comparison for small businesses',
+    excerpt:
+      'No universal winner — just the right fit for your shop size. Pricing, apps, and when each tool makes sense.',
+    author_name: 'LocalPunch Team',
+    tags: ['comparison', 'stamp-me', 'loyalty'],
+    seo_title: 'LocalPunch vs Stamp Me · Honest Small Business Comparison',
+    seo_description:
+      'Flat $60/mo unlimited vs tiered plans. When LocalPunch wins for single-location shops and when Stamp Me might be better.',
+    content: loadSeed('localpunch-vs-stamp-me.md'),
+  },
+  {
+    slug: 'taqueria-repeat-customer-guide',
+    title: 'How to turn first-time taqueria visitors into weekly regulars',
+    excerpt:
+      'Taquerias win on repeat lunch traffic. A simple punch reward, fast line punching, and texts on slow Tuesdays.',
+    author_name: 'LocalPunch Team',
+    tags: ['taqueria', 'retention', 'guides'],
+    seo_title: 'Taqueria Customer Retention Guide · Weekly Regulars',
+    seo_description:
+      'Turn first-time taqueria visitors into weekly regulars with clear rewards, counter QR, and a contact list you can text.',
+    content: loadSeed('taqueria-repeat-customer-guide.md'),
+  },
+  {
+    slug: 'loyalty-program-cost-breakdown',
+    title: 'What a small-business loyalty program actually costs in 2026',
+    excerpt:
+      'Paper, DIY QR, and software tiers — transparent pricing math and the ROI question owners should actually ask.',
+    author_name: 'LocalPunch Team',
+    tags: ['pricing', 'loyalty', 'guides'],
+    seo_title: 'Small Business Loyalty Program Cost Breakdown (2026)',
+    seo_description:
+      'Honest loyalty program costs: paper vs DIY vs software. Flat $60/mo math and ROI back-of-napkin for local shops.',
+    content: loadSeed('loyalty-program-cost-breakdown.md'),
   },
 ]
 
@@ -118,6 +166,6 @@ const res = await fetch(
 const status = res.status
 const text = await res.text()
 console.log('status:', status)
-console.log('body:', text.slice(0, 800))
+console.log('body:', text.slice(0, 1200))
 if (!res.ok) process.exit(1)
 console.log(`\nSeeded ${posts.length} posts ✅`)
