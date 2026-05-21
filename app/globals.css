@@ -390,4 +390,86 @@
     background: #F4F4F0;
     font-weight: 700;
   }
+
+  /* Mobile app shell — customer wallet, merchant dashboard */
+  .mobile-shell {
+    min-height: 100dvh;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: clip;
+    max-width: 100vw;
+  }
+  .mobile-shell-main {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+  .mobile-tab-bar {
+    padding-bottom: max(0.5rem, var(--safe-bottom));
+  }
+  .mobile-header-safe {
+    padding-top: max(0.75rem, var(--safe-top));
+  }
+
+  /* Tables scroll horizontally on small screens without page bleed */
+  .table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -0.25rem;
+    padding: 0 0.25rem;
+  }
+  .table-scroll table {
+    min-width: 100%;
+  }
+
+  /* Stamp grids stay inside the card on narrow phones */
+  .stamp-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    max-width: 100%;
+  }
+  .stamp-grid .stamp-slot {
+    flex: 0 0 auto;
+  }
+}
+
+@layer utilities {
+  .min-h-dvh {
+    min-height: 100dvh;
+    min-height: 100svh;
+  }
+  .pb-tab-bar {
+    padding-bottom: calc(var(--tab-bar-height) + var(--safe-bottom) + 0.5rem);
+  }
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Disable hover lift on touch — prevents horizontal bleed on narrow viewports */
+@media (hover: none), (max-width: 1023px) {
+  .nb-card:hover,
+  .nb-btn:hover,
+  .nb-btn-primary:hover,
+  .nb-btn-ghost:hover,
+  .nb-btn-dark:hover {
+    transform: none;
+  }
+  .nb-card:hover {
+    box-shadow: 3px 3px 0 #1a1a1a;
+  }
+  .nb-btn:hover,
+  .nb-btn-primary:hover,
+  .nb-btn-ghost:hover,
+  .nb-btn-dark:hover {
+    box-shadow: 3px 3px 0 #1a1a1a;
+  }
+  .nb-btn-dark:hover {
+    box-shadow: 3px 3px 0 #555;
+  }
 }

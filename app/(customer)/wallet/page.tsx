@@ -78,9 +78,9 @@ function PunchCardPreview({ card, completed }: { card: PunchCard; completed?: bo
 
   return (
     <Link href={`/card/${card.id}`}>
-      <div className={`nb-card p-4 ${completed ? 'bg-[#A8E6CF]' : 'bg-white'}`}>
-        <div className="flex items-start justify-between mb-3">
-          <div>
+      <div className={`nb-card p-4 min-w-0 ${completed ? 'bg-[#A8E6CF]' : 'bg-white'}`}>
+        <div className="flex items-start justify-between gap-2 mb-3 min-w-0">
+          <div className="min-w-0 flex-1">
             <p className="text-xs text-[#6B7280] font-medium">{business.name}</p>
             <p className="font-semibold leading-tight" style={{ fontFamily: 'var(--font-space-grotesk)' }}>{program.name}</p>
             <p className="text-xs text-[#6B7280] mt-0.5">{program.reward_description}</p>

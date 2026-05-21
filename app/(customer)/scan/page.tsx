@@ -93,25 +93,25 @@ export default function ScanPage() {
           <p className="text-[#6B7280] text-sm mt-1">{result.message}</p>
         </div>
         {!result.is_complete && (
-          <div className="flex gap-2 mt-2">
+          <div className="stamp-grid justify-center mt-2 max-w-full">
             {Array.from({ length: result.punches_required }).map((_, i) => (
-              <div key={i} className={`stamp-slot w-8 h-8 text-xs ${i < result.punch_count ? 'filled' : ''}`}>
+              <div key={i} className={`stamp-slot w-9 h-9 sm:w-10 sm:h-10 text-xs ${i < result.punch_count ? 'filled' : ''}`}>
                 {i < result.punch_count ? '✓' : ''}
               </div>
             ))}
           </div>
         )}
-        <div className="flex gap-3 mt-4">
+        <div className="flex flex-col sm:flex-row gap-3 mt-4 w-full max-w-xs">
           <button
             onClick={() => router.push('/wallet')}
-            className="nb-btn-ghost text-sm px-5 py-2.5"
+            className="nb-btn-ghost text-sm px-5 py-3 w-full sm:w-auto min-h-[44px]"
           >
             View cards
           </button>
           {result.is_complete && (
             <button
               onClick={() => router.push('/wallet')}
-              className="nb-btn-primary text-sm px-5 py-2.5 font-semibold"
+              className="nb-btn-primary text-sm px-5 py-3 font-semibold w-full sm:w-auto min-h-[44px]"
             >
               Redeem reward →
             </button>

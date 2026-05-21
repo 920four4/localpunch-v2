@@ -84,7 +84,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       className={`${spaceGrotesk.variable} ${dmSans.variable} ${jetbrainsMono.variable} h-full`}
     >
-      <body className="min-h-full bg-background text-foreground antialiased" suppressHydrationWarning>
+      <body className="min-h-dvh bg-background text-foreground antialiased overscroll-none" suppressHydrationWarning>
         <GoogleAnalytics />
         <AnalyticsProvider />
         {children}

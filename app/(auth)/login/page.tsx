@@ -114,9 +114,8 @@ function LoginInner() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8] flex flex-col">
-      {/* Top bar */}
-      <header className="px-5 h-14 flex items-center justify-between border-b border-[#1a1a1a]/10">
+    <div className="mobile-shell min-h-dvh bg-[#FAFAF8]">
+      <header className="mobile-header-safe px-4 pb-3 flex items-center justify-between border-b border-[#1a1a1a]/10">
         <Link href="/" className="flex items-center gap-2 font-bold" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
           <span className="inline-flex items-center justify-center w-7 h-7 bg-[#FFE566] rounded-md text-sm">🥊</span>
           LocalPunch

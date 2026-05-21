@@ -80,11 +80,12 @@ export default function AnalyticsPage() {
           </div>
 
           {/* Redemption rate table */}
-          <div className="nb-card-flat overflow-hidden">
-            <div className="px-5 py-4 border-b border-[#E5E7EB]">
+          <div className="nb-card-flat overflow-hidden min-w-0">
+            <div className="px-4 sm:px-5 py-4 border-b border-[#E5E7EB]">
               <h2 className="font-semibold" style={{ fontFamily: 'var(--font-space-grotesk)' }}>Redemption rates</h2>
             </div>
-            <table className="w-full text-sm">
+            <div className="table-scroll">
+              <table className="w-full text-sm min-w-[320px]">
               <thead className="bg-[#FAFAF8]">
                 <tr>
                   <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider">Program</th>
@@ -108,7 +109,8 @@ export default function AnalyticsPage() {
                   )
                 })}
               </tbody>
-            </table>
+              </table>
+            </div>
           </div>
         </>
       )}

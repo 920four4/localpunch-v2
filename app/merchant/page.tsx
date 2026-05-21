@@ -53,19 +53,19 @@ export default async function MerchantDashboard() {
 
   return (
     <div className="space-y-7">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <h1 className="page-header text-2xl">{business.name}</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 min-w-0">
+        <div className="min-w-0">
+          <h1 className="page-header text-xl sm:text-2xl truncate">{business.name}</h1>
           <p className="text-sm text-[#6B7280] mt-0.5">Merchant dashboard</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-shrink-0">
           <Link
             href="/merchant/guide"
-            className="hidden sm:inline-flex nb-btn-ghost text-sm font-medium px-4 py-2"
+            className="hidden sm:inline-flex nb-btn-ghost text-sm font-medium px-4 py-2 min-h-[44px]"
           >
             📖 Setup guide
           </Link>
-          <Link href="/merchant/qr" className="nb-btn-primary text-sm font-semibold px-4 py-2">
+          <Link href="/merchant/qr" className="nb-btn-primary text-sm font-semibold px-4 py-2.5 min-h-[44px] flex items-center">
             Show QR →
           </Link>
         </div>

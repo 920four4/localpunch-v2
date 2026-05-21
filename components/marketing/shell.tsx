@@ -1,36 +1,37 @@
 import Link from 'next/link'
 import { SITE_NAME } from '@/lib/site'
+import { MarketingMobileNav } from './mobile-nav'
 
 export function MarketingHeader({ active }: { active?: 'blog' | 'pricing' }) {
   return (
-    <header className="sticky top-0 z-20 backdrop-blur bg-[#FAFAF8]/85 border-b border-[#E7E6DF]">
-      <div className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
+    <header className="sticky top-0 z-20 backdrop-blur-md bg-[#FAFAF8]/90 border-b border-[#E7E6DF] mobile-header-safe">
+      <div className="max-w-6xl mx-auto px-4 sm:px-5 h-14 sm:h-16 flex items-center justify-between gap-3 min-w-0">
         <Link
           href="/"
-          className="flex items-center gap-2.5 font-bold text-lg"
+          className="flex items-center gap-2 sm:gap-2.5 font-bold text-base sm:text-lg min-w-0 shrink"
           style={{ fontFamily: 'var(--font-space-grotesk)' }}
         >
-          <span className="inline-flex items-center justify-center w-8 h-8 bg-[#FFE566] border border-[#E0CF4A] rounded-lg text-sm">
+          <span className="inline-flex flex-shrink-0 items-center justify-center w-8 h-8 bg-[#FFE566] border border-[#E0CF4A] rounded-lg text-sm">
             🥊
           </span>
-          {SITE_NAME}
+          <span className="truncate">{SITE_NAME}</span>
         </Link>
-        <nav className="flex items-center gap-1 sm:gap-3 text-sm">
+        <nav className="hidden lg:flex items-center gap-1 sm:gap-3 text-sm">
           <Link
             href="/how-it-works"
-            className="hidden md:inline text-[#5A554C] hover:text-[#1a1a1a] px-2 py-1.5 font-medium"
+            className="text-[#5A554C] hover:text-[#1a1a1a] px-2 py-1.5 font-medium"
           >
             How it works
           </Link>
           <Link
             href="/features"
-            className="hidden md:inline text-[#5A554C] hover:text-[#1a1a1a] px-2 py-1.5 font-medium"
+            className="text-[#5A554C] hover:text-[#1a1a1a] px-2 py-1.5 font-medium"
           >
             Features
           </Link>
           <Link
             href="/pricing"
-            className={`hidden sm:inline px-2 py-1.5 font-medium ${
+            className={`px-2 py-1.5 font-medium ${
               active === 'pricing'
                 ? 'text-[#1a1a1a] font-semibold'
                 : 'text-[#5A554C] hover:text-[#1a1a1a]'
@@ -64,6 +65,18 @@ export function MarketingHeader({ active }: { active?: 'blog' | 'pricing' }) {
             Start free
           </Link>
         </nav>
+        <div className="flex lg:hidden items-center gap-1 shrink-0">
+          <Link
+            href="/login?role=business"
+            className="nb-btn-primary text-xs sm:text-sm px-3 py-2 max-[380px]:hidden"
+            data-ga-event="cta_click"
+            data-ga-location="header_mobile"
+            data-ga-label="start_free"
+          >
+            Start free
+          </Link>
+          <MarketingMobileNav active={active} />
+        </div>
       </div>
     </header>
   )
@@ -71,7 +84,7 @@ export function MarketingHeader({ active }: { active?: 'blog' | 'pricing' }) {
 
 export function MarketingFooter() {
   return (
-    <footer className="border-t border-[#E7E6DF] py-10 px-5 bg-white mt-20">
+    <footer className="border-t border-[#E7E6DF] py-10 px-4 sm:px-5 bg-white mt-16 sm:mt-20 pb-[max(2rem,env(safe-area-inset-bottom))]">
       <div className="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-4 gap-8 text-sm">
         <div>
           <p className="font-bold text-[#1a1a1a] mb-2">{SITE_NAME}</p>
@@ -83,22 +96,22 @@ export function MarketingFooter() {
           <p className="font-semibold text-[#1a1a1a] mb-2">Product</p>
           <ul className="space-y-1.5 text-[#6B7280]">
             <li>
-              <Link href="/features" className="hover:text-[#1a1a1a]">
+              <Link href="/features" className="hover:text-[#1a1a1a] block py-1">
                 Features
               </Link>
             </li>
             <li>
-              <Link href="/pricing" className="hover:text-[#1a1a1a]">
+              <Link href="/pricing" className="hover:text-[#1a1a1a] block py-1">
                 Pricing
               </Link>
             </li>
             <li>
-              <Link href="/how-it-works" className="hover:text-[#1a1a1a]">
+              <Link href="/how-it-works" className="hover:text-[#1a1a1a] block py-1">
                 How it works
               </Link>
             </li>
             <li>
-              <Link href="/compare" className="hover:text-[#1a1a1a]">
+              <Link href="/compare" className="hover:text-[#1a1a1a] block py-1">
                 Compare
               </Link>
             </li>
@@ -108,22 +121,22 @@ export function MarketingFooter() {
           <p className="font-semibold text-[#1a1a1a] mb-2">Industries</p>
           <ul className="space-y-1.5 text-[#6B7280]">
             <li>
-              <Link href="/for/coffee-shops" className="hover:text-[#1a1a1a]">
+              <Link href="/for/coffee-shops" className="hover:text-[#1a1a1a] block py-1">
                 Coffee shops
               </Link>
             </li>
             <li>
-              <Link href="/for/taquerias" className="hover:text-[#1a1a1a]">
+              <Link href="/for/taquerias" className="hover:text-[#1a1a1a] block py-1">
                 Taquerias
               </Link>
             </li>
             <li>
-              <Link href="/for/barbershops" className="hover:text-[#1a1a1a]">
+              <Link href="/for/barbershops" className="hover:text-[#1a1a1a] block py-1">
                 Barbershops
               </Link>
             </li>
             <li>
-              <Link href="/for/boba-shops" className="hover:text-[#1a1a1a]">
+              <Link href="/for/boba-shops" className="hover:text-[#1a1a1a] block py-1">
                 Boba shops
               </Link>
             </li>
@@ -133,17 +146,17 @@ export function MarketingFooter() {
           <p className="font-semibold text-[#1a1a1a] mb-2">Company</p>
           <ul className="space-y-1.5 text-[#6B7280]">
             <li>
-              <Link href="/blog" className="hover:text-[#1a1a1a]">
+              <Link href="/blog" className="hover:text-[#1a1a1a] block py-1">
                 Blog
               </Link>
             </li>
             <li>
-              <Link href="/privacy-policy" className="hover:text-[#1a1a1a]">
+              <Link href="/privacy-policy" className="hover:text-[#1a1a1a] block py-1">
                 Privacy
               </Link>
             </li>
             <li>
-              <Link href="/terms" className="hover:text-[#1a1a1a]">
+              <Link href="/terms" className="hover:text-[#1a1a1a] block py-1">
                 Terms
               </Link>
             </li>
@@ -165,18 +178,18 @@ export function MarketingCTA({
   sub?: string
 }) {
   return (
-    <section className="px-5 py-16">
-      <div className="max-w-3xl mx-auto rounded-2xl bg-[#1a1a1a] text-white p-10 sm:p-12 text-center">
+    <section className="px-4 sm:px-5 py-12 sm:py-16">
+      <div className="max-w-3xl mx-auto rounded-2xl bg-[#1a1a1a] text-white p-8 sm:p-12 text-center">
         <h2
-          className="text-2xl sm:text-3xl font-bold tracking-tight"
+          className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-balance"
           style={{ fontFamily: 'var(--font-space-grotesk)' }}
         >
           {headline}
         </h2>
-        <p className="mt-3 text-white/70 max-w-md mx-auto">{sub}</p>
+        <p className="mt-3 text-white/70 max-w-md mx-auto text-sm sm:text-base">{sub}</p>
         <Link
           href="/login?role=business"
-          className="inline-block mt-8 bg-[#FFE566] text-[#1a1a1a] rounded-full px-7 py-3.5 text-sm font-bold hover:bg-[#f5d84d] transition"
+          className="inline-flex items-center justify-center mt-8 bg-[#FFE566] text-[#1a1a1a] rounded-full px-6 sm:px-7 py-3.5 text-sm font-bold hover:bg-[#f5d84d] transition min-h-[44px]"
           data-ga-event="cta_click"
           data-ga-location="marketing_cta"
           data-ga-label="start_my_shop"

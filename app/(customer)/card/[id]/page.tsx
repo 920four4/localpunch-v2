@@ -39,8 +39,8 @@ export default async function CardPage({ params }: { params: Promise<{ id: strin
 
       {/* Card visual */}
       <div className={`nb-card-flat p-5 ${card.is_complete ? 'bg-[#A8E6CF]' : 'bg-white'}`}>
-        <div className="flex items-center justify-between mb-4">
-          <p className="font-semibold text-sm" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
+        <div className="flex items-start justify-between gap-3 mb-4 min-w-0">
+          <p className="font-semibold text-sm min-w-0 break-words" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
             🎁 {program.reward_description}
           </p>
           {card.is_complete && (
