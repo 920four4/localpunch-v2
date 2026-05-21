@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og'
+import { PunchCardLogoMark } from '@/lib/brand-icon'
 
 export const OG_SIZE = { width: 1200, height: 630 } as const
 export const OG_CONTENT_TYPE = 'image/png'
@@ -12,36 +13,6 @@ const MINT = '#A8E6CF'
 const MUTED = '#5A554C'
 const SUBTLE = '#9A9387'
 const BORDER = '#E7E6DF'
-
-/** Logo mark — Satori does not render emoji reliably; use vector shapes + LP */
-function LogoMark({ size = 72 }: { size?: number }) {
-  const fontSize = Math.round(size * 0.38)
-  return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: size,
-        height: size,
-        background: YELLOW,
-        border: '2px solid #E0CF4A',
-        borderRadius: Math.round(size * 0.22),
-      }}
-    >
-      <span
-        style={{
-          fontSize,
-          fontWeight: 800,
-          color: INK,
-          letterSpacing: '-0.04em',
-        }}
-      >
-        LP
-      </span>
-    </div>
-  )
-}
 
 function PunchCardPreview() {
   const punched = 7
@@ -184,7 +155,7 @@ export async function createOgImage() {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-              <LogoMark size={72} />
+              <PunchCardLogoMark size={72} />
               <span
                 style={{
                   fontSize: 56,

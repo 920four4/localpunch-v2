@@ -2,6 +2,7 @@ import { createAdminClient } from '@/lib/supabase/server'
 import { verifyRedeemToken } from '@/lib/qr/tokens'
 import ConfirmRedeem from './confirm'
 import Link from 'next/link'
+import { Logo } from '@/components/brand/logo'
 
 export const dynamic = 'force-dynamic'
 
@@ -106,10 +107,7 @@ function Shell({ children }: { children: React.ReactNode }) {
           className="flex items-center gap-2 font-bold"
           style={{ fontFamily: 'var(--font-space-grotesk)' }}
         >
-          <span className="inline-flex items-center justify-center w-7 h-7 bg-[#FFE566] rounded-md text-sm">
-            🥊
-          </span>
-          LocalPunch
+<Logo size="sm" />
         </Link>
       </header>
       <main className="flex-1 flex items-start justify-center p-5 pt-10">

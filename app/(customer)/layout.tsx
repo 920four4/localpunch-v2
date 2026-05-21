@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { Logo } from '@/components/brand/logo'
 
 const navItems = [
   { href: '/wallet', icon: '🎴', label: 'Cards' },
@@ -13,11 +14,8 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
   return (
     <div className="mobile-shell min-h-dvh bg-[#FAFAF8] pb-tab-bar">
       <header className="sticky top-0 z-20 bg-[#FAFAF8]/95 backdrop-blur-md border-b border-[#1a1a1a]/10 mobile-header-safe px-4 pb-3 flex items-center justify-between">
-        <Link href="/wallet" className="flex items-center gap-2 touch-target -ml-1">
-          <span className="inline-flex items-center justify-center w-8 h-8 bg-[#FFE566] rounded-lg text-sm border border-[#E0CF4A]">🥊</span>
-          <span className="text-base font-bold tracking-tight" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
-            LocalPunch
-          </span>
+        <Link href="/wallet" className="touch-target -ml-1">
+          <Logo size="sm" />
         </Link>
       </header>
 

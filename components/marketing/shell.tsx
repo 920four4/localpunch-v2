@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { SITE_NAME } from '@/lib/site'
+import { LogoMark } from '@/components/brand/logo-mark'
 import { MarketingMobileNav } from './mobile-nav'
 
 export function MarketingHeader({ active }: { active?: 'blog' | 'pricing' }) {
@@ -11,9 +12,7 @@ export function MarketingHeader({ active }: { active?: 'blog' | 'pricing' }) {
           className="flex items-center gap-2 sm:gap-2.5 font-bold text-base sm:text-lg min-w-0 shrink"
           style={{ fontFamily: 'var(--font-space-grotesk)' }}
         >
-          <span className="inline-flex flex-shrink-0 items-center justify-center w-8 h-8 bg-[#FFE566] border border-[#E0CF4A] rounded-lg text-sm">
-            🥊
-          </span>
+          <LogoMark size={32} tile />
           <span className="truncate">{SITE_NAME}</span>
         </Link>
         <nav className="hidden lg:flex items-center gap-1 sm:gap-3 text-sm">
