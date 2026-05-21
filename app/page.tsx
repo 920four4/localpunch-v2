@@ -158,6 +158,64 @@ const Icons = {
 }
 
 /* ─────────────────────────────────────────────────────────────
+   Header
+   ──────────────────────────────────────────────────────────── */
+
+function Header() {
+  return (
+    <header className="sticky top-0 z-20 backdrop-blur bg-[#FAFAF8]/85 border-b border-[#E7E6DF]">
+      <div className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
+        <Link
+          href="/"
+          className="flex items-center gap-2.5 font-bold text-lg"
+          style={{ fontFamily: 'var(--font-space-grotesk)' }}
+        >
+          <span className="inline-flex items-center justify-center w-8 h-8 bg-[#FFE566] border border-[#E0CF4A] rounded-lg text-sm">
+            🥊
+          </span>
+          LocalPunch
+        </Link>
+        <nav className="flex items-center gap-1 sm:gap-4 text-sm">
+          <Link
+            href="/how-it-works"
+            className="hidden sm:inline text-[#5A554C] hover:text-[#1a1a1a] px-2 py-1.5 font-medium"
+          >
+            How it works
+          </Link>
+          <Link
+            href="/pricing"
+            className="hidden sm:inline text-[#5A554C] hover:text-[#1a1a1a] px-2 py-1.5 font-medium"
+          >
+            Pricing
+          </Link>
+          <Link
+            href="/blog"
+            className="hidden sm:inline text-[#5A554C] hover:text-[#1a1a1a] px-2 py-1.5 font-medium"
+          >
+            Blog
+          </Link>
+          <Link
+            href="/login"
+            className="text-[#5A554C] hover:text-[#1a1a1a] px-2 py-1.5 font-medium"
+          >
+            Sign in
+          </Link>
+          <Link
+            href="/login?role=business"
+            className="nb-btn-primary text-sm px-4 py-2"
+            data-ga-event="cta_click"
+            data-ga-location="home_header"
+            data-ga-label="start_free"
+          >
+            Start free
+          </Link>
+        </nav>
+      </div>
+    </header>
+  )
+}
+
+/* ─────────────────────────────────────────────────────────────
    Hero — lead with the outcome, dissolve the "is this a hassle" fear
    ──────────────────────────────────────────────────────────── */
 
@@ -173,7 +231,7 @@ function Hero() {
           >
             Digital punch cards for
             <br className="hidden sm:block" /> local businesses &mdash;{' '}
-            <span className="relative whitespace-nowrap">
+            <span className="relative inline-block">
               <span className="relative z-10">without the busywork.</span>
               <span className="absolute left-0 right-0 bottom-1 h-3 bg-[#FFE566] -z-0 rounded-sm" />
             </span>
@@ -706,7 +764,7 @@ function ValueMath() {
           style={{ fontFamily: 'var(--font-space-grotesk)' }}
         >
           $60 a month is{' '}
-          <span className="relative whitespace-nowrap">
+          <span className="relative inline-block">
             <span className="relative z-10">one returning customer</span>
             <span className="absolute left-0 right-0 bottom-1 h-3 bg-[#FFE566] -z-0 rounded-sm" />
           </span>{' '}
