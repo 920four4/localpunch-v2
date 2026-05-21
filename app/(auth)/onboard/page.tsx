@@ -8,6 +8,7 @@ import { trackEvent, trackSignUp } from '@/lib/analytics/client'
 import { AnalyticsEvents } from '@/lib/analytics/events'
 import { toast } from 'sonner'
 import type { UserRole } from '@/lib/types'
+import { Logo } from '@/components/brand/logo'
 
 function slugify(s: string) {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
@@ -80,8 +81,7 @@ export default function OnboardPage() {
     <div className="min-h-screen bg-[#FAFAF8] flex flex-col">
       <header className="px-5 h-14 flex items-center border-b border-[#1a1a1a]/10">
         <Link href="/" className="flex items-center gap-2 font-bold" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
-          <span className="inline-flex items-center justify-center w-7 h-7 bg-[#FFE566] rounded-md text-sm">🥊</span>
-          LocalPunch
+          <Logo size="sm" />
         </Link>
       </header>
 

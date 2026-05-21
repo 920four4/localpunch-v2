@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { LogoMark } from '@/components/brand/logo-mark'
 import { useState } from 'react'
 import { Menu } from 'lucide-react'
 import { NavSheet } from '@/components/mobile/nav-sheet'
@@ -21,7 +22,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="hidden lg:flex lg:w-56 flex-col bg-[#1a1a1a] text-white min-h-screen flex-shrink-0">
         <div className="p-5 border-b border-white/10">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-[#FFE566] rounded-md flex items-center justify-center text-sm">🥊</div>
+            <LogoMark size={28} tile />
             <div>
               <p className="text-xs text-white/50">LocalPunch</p>
               <p className="text-sm font-semibold" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
@@ -48,7 +49,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="flex-1 flex flex-col min-w-0 w-full">
         <header className="lg:hidden sticky top-0 z-20 bg-[#1a1a1a] text-white mobile-header-safe px-4 pb-3 flex items-center justify-between">
           <span className="font-bold text-sm" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
-            🥊 Admin
+            Admin
           </span>
           <button
             type="button"
@@ -63,7 +64,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <NavSheet
           open={menuOpen}
           onOpenChange={setMenuOpen}
-          title="🥊 Admin"
+          title="Admin"
           items={navItems}
           footer={
             <Link

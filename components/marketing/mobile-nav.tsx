@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { Menu } from 'lucide-react'
 import { SITE_NAME } from '@/lib/site'
+import { LogoMark } from '@/components/brand/logo-mark'
 import {
   Sheet,
   SheetContent,
@@ -47,9 +48,7 @@ export function MarketingMobileNav({
               className="flex items-center gap-2 text-base font-bold"
               style={{ fontFamily: 'var(--font-space-grotesk)' }}
             >
-              <span className="inline-flex items-center justify-center w-8 h-8 bg-[#FFE566] border border-[#E0CF4A] rounded-lg text-sm">
-                🥊
-              </span>
+              <LogoMark size={32} tile />
               {SITE_NAME}
             </SheetTitle>
           </SheetHeader>

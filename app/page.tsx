@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { JsonLd, MarketingHeader } from '@/components/marketing/shell'
+import { LogoMark } from '@/components/brand/logo-mark'
 import { SITE_URL } from '@/lib/site'
 
 export const metadata: Metadata = {
@@ -984,9 +985,7 @@ function Footer() {
     <footer className="border-t border-[#E7E6DF] py-8 px-5 bg-white">
       <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-[#9A9387]">
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center justify-center w-6 h-6 bg-[#FFE566] border border-[#E0CF4A] rounded text-xs">
-            🥊
-          </span>
+<LogoMark size={24} tile />
           <span className="font-bold text-[#1a1a1a]">LocalPunch</span>
           <span>© {new Date().getFullYear()}</span>
         </div>
