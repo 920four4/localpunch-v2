@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og'
+import { OgCheckmark } from '@/lib/og-checkmark'
 
 const INK = '#1a1a1a'
 const YELLOW = '#FFE566'
@@ -54,12 +55,9 @@ export function PunchCardLogoMark({ size = 72 }: { size?: number }) {
                 borderRadius: dot,
                 background: filled ? YELLOW : EMPTY,
                 border: `${innerStroke}px solid ${filled ? INK : EMPTY_STROKE}`,
-                color: INK,
-                fontSize: Math.round(dot * 0.9),
-                fontWeight: 800,
               }}
             >
-              {filled ? '✓' : ''}
+              {filled ? <OgCheckmark size={dot * 2} /> : null}
             </div>
           ))}
         </div>

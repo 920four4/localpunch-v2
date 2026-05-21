@@ -1,5 +1,7 @@
 import { ImageResponse } from 'next/og'
 import { PunchCardLogoMark } from '@/lib/brand-icon'
+import { OgCheckmark } from '@/lib/og-checkmark'
+import { loadOgFonts, OG_FONT_BODY, OG_FONT_HEADING } from '@/lib/og-fonts'
 
 export const OG_SIZE = { width: 1200, height: 630 } as const
 export const OG_CONTENT_TYPE = 'image/png'
@@ -13,6 +15,7 @@ const MINT = '#A8E6CF'
 const MUTED = '#5A554C'
 const SUBTLE = '#9A9387'
 const BORDER = '#E7E6DF'
+const CARD_BORDER = '#E0CF4A'
 
 function PunchCardPreview() {
   const punched = 7
@@ -23,11 +26,12 @@ function PunchCardPreview() {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        width: 340,
+        width: 360,
         padding: 28,
         background: '#FFFFFF',
         border: `2px solid ${INK}`,
         borderRadius: 16,
+        boxShadow: `4px 4px 0 ${INK}`,
       }}
     >
       <div
@@ -41,9 +45,10 @@ function PunchCardPreview() {
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <span
             style={{
+              fontFamily: OG_FONT_HEADING,
               fontSize: 11,
-              fontWeight: 600,
-              letterSpacing: '0.08em',
+              fontWeight: 700,
+              letterSpacing: '0.12em',
               textTransform: 'uppercase',
               color: SUBTLE,
             }}
@@ -52,10 +57,12 @@ function PunchCardPreview() {
           </span>
           <span
             style={{
-              fontSize: 22,
+              fontFamily: OG_FONT_HEADING,
+              fontSize: 24,
               fontWeight: 700,
               color: INK,
-              marginTop: 4,
+              marginTop: 6,
+              letterSpacing: '-0.02em',
             }}
           >
             Free Taco Tuesday
@@ -63,26 +70,21 @@ function PunchCardPreview() {
         </div>
         <span
           style={{
+            fontFamily: OG_FONT_HEADING,
             fontSize: 12,
             fontWeight: 700,
             background: MINT,
             color: INK,
             padding: '6px 12px',
             borderRadius: 999,
+            border: `1px solid ${INK}`,
           }}
         >
           {punched} / {total}
         </span>
       </div>
 
-      <div
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: 10,
-          width: 284,
-        }}
-      >
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, width: 304 }}>
         {Array.from({ length: total }).map((_, i) => {
           const filled = i < punched
           return (
@@ -96,13 +98,16 @@ function PunchCardPreview() {
                 height: 48,
                 borderRadius: 999,
                 background: filled ? YELLOW : '#F5F4EF',
-                border: filled ? '2px solid #E0CF4A' : `1px solid ${BORDER}`,
-                color: filled ? INK : '#C9C5BA',
-                fontSize: filled ? 20 : 14,
+                border: filled
+                  ? `2px solid ${CARD_BORDER}`
+                  : `1px solid ${BORDER}`,
+                fontSize: filled ? 0 : 14,
                 fontWeight: 700,
+                fontFamily: OG_FONT_HEADING,
+                color: filled ? INK : '#C9C5BA',
               }}
             >
-              {filled ? '●' : String(i + 1)}
+              {filled ? <OgCheckmark size={28} /> : String(i + 1)}
             </div>
           )
         })}
@@ -114,19 +119,23 @@ function PunchCardPreview() {
           justifyContent: 'center',
           marginTop: 20,
           paddingTop: 16,
-          borderTop: '1px solid #EDEBE3',
+          borderTop: `1px solid ${BORDER}`,
           fontSize: 14,
+          fontFamily: OG_FONT_BODY,
+          fontWeight: 500,
           color: MUTED,
         }}
       >
         <span>3 more visits → </span>
-        <span style={{ fontWeight: 700, color: INK }}>1 free taco</span>
+        <span style={{ fontWeight: 500, color: INK }}>1 free taco</span>
       </div>
     </div>
   )
 }
 
 export async function createOgImage() {
+  const fonts = await loadOgFonts()
+
   return new ImageResponse(
     (
       <div
@@ -135,7 +144,8 @@ export async function createOgImage() {
           width: '100%',
           height: '100%',
           background: WARM,
-          padding: '56px 64px',
+          padding: '52px 60px',
+          fontFamily: OG_FONT_BODY,
         }}
       >
         <div
@@ -151,15 +161,16 @@ export async function createOgImage() {
             style={{
               display: 'flex',
               flexDirection: 'column',
-              maxWidth: 560,
+              maxWidth: 580,
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-              <PunchCardLogoMark size={72} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+              <PunchCardLogoMark size={80} />
               <span
                 style={{
-                  fontSize: 56,
-                  fontWeight: 800,
+                  fontFamily: OG_FONT_HEADING,
+                  fontSize: 58,
+                  fontWeight: 700,
                   color: INK,
                   letterSpacing: '-0.03em',
                 }}
@@ -172,45 +183,54 @@ export async function createOgImage() {
               style={{
                 display: 'flex',
                 flexDirection: 'column',
-                marginTop: 28,
+                marginTop: 32,
               }}
             >
               <span
                 style={{
-                  fontSize: 34,
-                  fontWeight: 800,
-                  lineHeight: 1.15,
+                  fontFamily: OG_FONT_HEADING,
+                  fontSize: 36,
+                  fontWeight: 700,
+                  lineHeight: 1.12,
                   color: INK,
                   letterSpacing: '-0.02em',
                 }}
               >
                 Bring customers back
               </span>
-              <span
+              <div
                 style={{
-                  fontSize: 34,
-                  fontWeight: 800,
-                  lineHeight: 1.15,
-                  color: INK,
-                  letterSpacing: '-0.02em',
-                  background: YELLOW,
-                  padding: '0 8px',
-                  marginTop: 4,
+                  display: 'flex',
+                  marginTop: 8,
                 }}
               >
-                without the busywork
-              </span>
+                <span
+                  style={{
+                    fontFamily: OG_FONT_HEADING,
+                    fontSize: 36,
+                    fontWeight: 700,
+                    lineHeight: 1.12,
+                    color: INK,
+                    letterSpacing: '-0.02em',
+                    background: YELLOW,
+                    padding: '2px 10px',
+                  }}
+                >
+                  without the busywork
+                </span>
+              </div>
             </div>
 
             <div
               style={{
                 display: 'flex',
-                marginTop: 20,
-                fontSize: 22,
+                marginTop: 22,
+                fontSize: 21,
                 fontWeight: 500,
-                lineHeight: 1.45,
+                fontFamily: OG_FONT_BODY,
+                lineHeight: 1.5,
                 color: MUTED,
-                maxWidth: 480,
+                maxWidth: 500,
               }}
             >
               Digital punch cards for local businesses — no app downloads, no
@@ -219,10 +239,12 @@ export async function createOgImage() {
 
             <span
               style={{
-                marginTop: 36,
-                fontSize: 18,
+                marginTop: 32,
+                fontSize: 17,
                 fontWeight: 500,
+                fontFamily: OG_FONT_BODY,
                 color: SUBTLE,
+                letterSpacing: '0.02em',
               }}
             >
               localpunchcard.io
@@ -233,6 +255,6 @@ export async function createOgImage() {
         </div>
       </div>
     ),
-    OG_SIZE,
+    { ...OG_SIZE, fonts },
   )
 }
