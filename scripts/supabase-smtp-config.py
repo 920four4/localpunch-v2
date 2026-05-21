@@ -41,10 +41,11 @@ URL = f"https://api.supabase.com/v1/projects/{PROJECT_REF}/config/auth"
 
 # Only these are touched. Everything else (SMS, site_url, redirects) untouched.
 PATCH = {
+    "external_email_enabled": True,
     "smtp_host": "smtp.resend.com",
     "smtp_port": "587",
     "smtp_user": "resend",
-    "smtp_admin_email": "localpunch@920four.com",
+    "smtp_admin_email": "auth@localpunchcard.io",
     "smtp_sender_name": "LocalPunch",
     "rate_limit_email_sent": 30,
 }
