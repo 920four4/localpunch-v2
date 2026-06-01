@@ -7,12 +7,14 @@ import {
 } from '@/lib/analytics/server'
 import { createAdminClient } from '@/lib/supabase/server'
 import { getStripe, isLiveStatus } from '@/lib/stripe'
+import { merchantEmailVars, sendTransactional } from '@/lib/email'
 import {
-  sendEvent,
-  sendTransactional,
-  syncContact,
-  type ContactProperties,
-} from '@/lib/loops'
+  notifyDispute,
+  notifyFailedPayment,
+  notifyPayment,
+  notifyRefund,
+  notifySubscription,
+} from '@/lib/telegram/notify'
 
 /**
  * Stripe webhook endpoint.
@@ -91,7 +93,7 @@ export async function POST(request: NextRequest) {
       .maybeSingle()) as { data: BusinessRow | null }
     if (!business) return null
 
-    // Fetch owner email + display name for Loops contact sync.
+    // Fetch owner email + display name for transactional email.
     const { data: authUser } = await admin.auth.admin.getUserById(business.owner_id)
     const email = authUser?.user?.email ?? null
     const { data: profile } = await admin
@@ -152,68 +154,54 @@ export async function POST(request: NextRequest) {
       })
       .eq('id', businessId)
 
-    // --- Loops sync -------------------------------------------------------
     const owner = prev
       ? await getOwnerContactInfo(prev.owner_id)
       : null
     if (!owner?.email) return
 
-    const contactProps: ContactProperties = {
-      userId: prev?.owner_id,
-      userGroup: 'merchant',
-      firstName: owner.firstName ?? undefined,
-      source: 'localpunch-stripe',
-      businessId,
-      businessName: prev?.name,
-      businessSlug: prev?.slug,
-      businessAddress: prev?.address ?? undefined,
-      businessCreatedAt: prev?.created_at,
-      stripeCustomerId: customerId,
-      stripeSubscriptionId: sub.id,
-      subscriptionStatus: sub.status,
-      planInterval: interval,
-      planPriceCents: priceCents ?? undefined,
-      currentPeriodEnd: periodEnd ?? undefined,
-      cancelAtPeriodEnd: sub.cancel_at_period_end ?? false,
-    }
-
-    // Always sync contact properties so Loops segments stay fresh.
-    await syncContact(owner.email, contactProps)
-
-    // Detect transitions.
     const wasActive = isLiveStatus(prev?.subscription_status)
     if (!wasActive && nowActive) {
-      // 🎉 First activation (or reactivation) — fire the onboarding drip.
-      const isReactivation = prev?.subscription_status === 'past_due' ||
+      const isReactivation =
+        prev?.subscription_status === 'past_due' ||
         prev?.subscription_status === 'canceled'
-      contactProps.activatedAt = new Date().toISOString()
-      if (!isReactivation) contactProps.subscriptionStartedAt = new Date().toISOString()
-      await sendEvent(
+      if (!isReactivation) {
+        await admin
+          .from('businesses')
+          .update({
+            subscription_activated_at: new Date().toISOString(),
+            merchant_drip_sent: {},
+          })
+          .eq('id', businessId)
+      }
+      const planLabel =
+        interval === 'year' ? 'Yearly ($600/yr)' : 'Monthly ($60/mo)'
+      await sendTransactional(
+        'merchantWelcome',
         owner.email,
-        isReactivation ? 'merchant_reactivated' : 'merchant_activated',
-        {
-          business_name: prev?.name ?? '',
-          plan_interval: interval ?? 'month',
-          plan_price: priceCents ? priceCents / 100 : 60,
-        },
-        contactProps
+        merchantEmailVars({
+          first_name: owner.firstName ?? 'there',
+          business_name: prev?.name ?? 'your shop',
+          plan_label: planLabel,
+        })
       )
-      // Also send the immediate welcome transactional (day 0 of the drip).
-      await sendTransactional('merchantWelcome', owner.email, {
-        first_name: owner.firstName ?? 'there',
-        business_name: prev?.name ?? 'your shop',
-        plan_label: interval === 'year' ? 'Yearly ($600/yr)' : 'Monthly ($60/mo)',
-        dashboard_url: 'https://www.localpunchcard.io/merchant',
-        qr_url: `https://www.localpunchcard.io/merchant/qr`,
+      void notifySubscription({
+        plan: planLabel,
+        account: `${prev?.name ?? 'shop'} · ${owner.email}`,
+        kind: 'started',
       })
     } else if (wasActive && !nowActive && sub.status === 'canceled') {
-      // 🛑 Canceled
-      await sendEvent(owner.email, 'merchant_churned', {
-        business_name: prev?.name ?? '',
-      }, { ...contactProps, churnedAt: new Date().toISOString() })
-      await sendTransactional('merchantCanceled', owner.email, {
-        first_name: owner.firstName ?? 'there',
-        business_name: prev?.name ?? 'your shop',
+      await sendTransactional(
+        'merchantCanceled',
+        owner.email,
+        merchantEmailVars({
+          first_name: owner.firstName ?? 'there',
+          business_name: prev?.name ?? 'your shop',
+        })
+      )
+      void notifySubscription({
+        plan: interval === 'year' ? 'Yearly' : 'Monthly',
+        account: `${prev?.name ?? 'shop'} · ${owner.email}`,
+        kind: 'canceled',
       })
       await trackServerChurn({
         stripeCustomerId: customerId,
@@ -263,6 +251,18 @@ export async function POST(request: NextRequest) {
               businessId: session.metadata?.business_id,
               isRenewal: false,
             })
+            // Shared Stripe account: only ping for OUR merchants (those in the
+            // businesses table). Ignores client/other-app revenue.
+            const info = await getBusinessByStripeIds(customerId)
+            if (info) {
+              void notifyPayment({
+                amount: valueCents / 100,
+                currency: (session.currency || 'usd').toUpperCase(),
+                customer:
+                  info.email || session.customer_details?.email || info.business.name,
+                item: interval === 'year' ? 'Yearly plan' : 'Monthly plan',
+              })
+            }
           }
         }
         break
@@ -289,15 +289,8 @@ export async function POST(request: NextRequest) {
             ? invoice.customer
             : invoice.customer?.id
 
-        // Extend LTV + last payment props on Loops
         if (customerId) {
           const info = await getBusinessByStripeIds(customerId)
-          if (info?.email) {
-            await syncContact(info.email, {
-              lastPaymentAt: new Date().toISOString(),
-              lifetimeValueCents: invoice.amount_paid ?? undefined,
-            })
-          }
 
           // Renewals only — initial purchase tracked on checkout.session.completed
           const billingReason = (invoice as Stripe.Invoice & { billing_reason?: string })
@@ -317,6 +310,15 @@ export async function POST(request: NextRequest) {
               businessId: info?.business.id,
               isRenewal: true,
             })
+            // Only ping for OUR merchants — this Stripe account is shared.
+            if (info) {
+              void notifyPayment({
+                amount: invoice.amount_paid / 100,
+                currency: (invoice.currency || 'usd').toUpperCase(),
+                customer: info.email || info.business.name,
+                item: `Renewal · ${interval === 'year' ? 'Yearly' : 'Monthly'}`,
+              })
+            }
           }
         }
         break
@@ -338,26 +340,74 @@ export async function POST(request: NextRequest) {
         if (customerId) {
           const info = await getBusinessByStripeIds(customerId)
           if (info?.email) {
-            await syncContact(info.email, {
-              lastPaymentFailedAt: new Date().toISOString(),
-            })
-            await sendEvent(info.email, 'merchant_payment_failed', {
-              business_name: info.business.name,
-              amount_due: (invoice.amount_due ?? 0) / 100,
-            })
-            await sendTransactional('merchantPaymentFailed', info.email, {
-              first_name: info.firstName ?? 'there',
-              business_name: info.business.name,
-              amount_due: ((invoice.amount_due ?? 0) / 100).toFixed(2),
-              billing_portal_url: 'https://www.localpunchcard.io/merchant/billing',
-            })
+            await sendTransactional(
+              'merchantPaymentFailed',
+              info.email,
+              merchantEmailVars({
+                first_name: info.firstName ?? 'there',
+                business_name: info.business.name,
+                amount_due: ((invoice.amount_due ?? 0) / 100).toFixed(2),
+              })
+            )
             await trackServerPaymentFailed({
               stripeCustomerId: customerId,
               userId: info.business.owner_id,
               businessId: info.business.id,
               amountDueCents: invoice.amount_due ?? 0,
             })
+            void notifyFailedPayment({
+              amount: (invoice.amount_due ?? 0) / 100,
+              currency: (invoice.currency || 'usd').toUpperCase(),
+              customer: info.email || info.business.name,
+              reason: 'Invoice payment failed (card declined / past_due)',
+            })
           }
+        }
+        break
+      }
+
+      case 'charge.refunded': {
+        const charge = event.data.object as Stripe.Charge
+        const customerId =
+          typeof charge.customer === 'string' ? charge.customer : charge.customer?.id
+        // Shared Stripe account: only surface refunds for OUR merchants.
+        const info = customerId ? await getBusinessByStripeIds(customerId) : null
+        if (info) {
+          void notifyRefund({
+            amount: (charge.amount_refunded ?? 0) / 100,
+            currency: (charge.currency || 'usd').toUpperCase(),
+            customer: info.email || charge.billing_details?.email || info.business.name,
+            reason: charge.refunds?.data?.[0]?.reason ?? undefined,
+          })
+        }
+        break
+      }
+
+      case 'charge.dispute.created': {
+        const dispute = event.data.object as Stripe.Dispute
+        const chargeId =
+          typeof dispute.charge === 'string' ? dispute.charge : dispute.charge?.id
+        // Only surface disputes tied to OUR merchants — this Stripe account is shared.
+        let info: Awaited<ReturnType<typeof getBusinessByStripeIds>> = null
+        let billingEmail: string | undefined
+        try {
+          if (chargeId) {
+            const charge = await stripe.charges.retrieve(chargeId)
+            const customerId =
+              typeof charge.customer === 'string' ? charge.customer : charge.customer?.id
+            info = customerId ? await getBusinessByStripeIds(customerId) : null
+            billingEmail = charge.billing_details?.email ?? undefined
+          }
+        } catch {
+          // best-effort lookup
+        }
+        if (info) {
+          void notifyDispute({
+            amount: (dispute.amount ?? 0) / 100,
+            currency: (dispute.currency || 'usd').toUpperCase(),
+            customer: info.email || billingEmail || info.business.name,
+            reason: dispute.reason,
+          })
         }
         break
       }

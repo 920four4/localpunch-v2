@@ -71,8 +71,15 @@ export async function POST(request: NextRequest): Promise<NextResponse<PunchResu
 
     // Milestone nudge (fire-and-forget; email customers only).
     const { data: { user } } = await supabase.auth.getUser()
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('display_name')
+      .eq('id', user!.id)
+      .maybeSingle()
+
     await nudgeAfterPunch({
       email: user?.email,
+      firstName: profile?.display_name,
       punchCount: result.punch_count!,
       punchesRequired: result.punches_required!,
       isComplete: result.is_complete!,

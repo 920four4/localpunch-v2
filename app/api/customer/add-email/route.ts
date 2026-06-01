@@ -1,11 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server'
+import { sendTransactional } from '@/lib/email'
 import { createClient, createAdminClient } from '@/lib/supabase/server'
-import { sendEvent, sendTransactional, syncContact } from '@/lib/loops'
 
 /**
  * Lets a phone-auth customer attach an email to their account so we can send
- * them reminders (and the welcome email). Writes to auth.users via the admin
- * client, then mirrors to Loops and fires the welcome transactional.
+ * them reminders and the welcome email via Resend.
  */
 export const dynamic = 'force-dynamic'
 
@@ -30,7 +29,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'invalid_email' }, { status: 400 })
   }
 
-  // Already attached? Then skip the welcome.
   const alreadyHadEmail = Boolean(user.email)
 
   const admin = await createAdminClient()
@@ -45,8 +43,6 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // Stamp marketing_consent on profile (they explicitly opted in by entering
-  // their email in the "get reminders" flow).
   await admin
     .from('profiles')
     .update({ marketing_consent: true })
@@ -54,27 +50,16 @@ export async function POST(request: NextRequest) {
 
   const { data: profile } = await admin
     .from('profiles')
-    .select('display_name, phone, created_at')
+    .select('display_name')
     .eq('id', user.id)
     .maybeSingle()
 
-  await syncContact(email, {
-    userId: user.id,
-    userGroup: 'customer',
-    firstName: profile?.display_name ?? undefined,
-    phone: profile?.phone ?? undefined,
-    phoneVerified: true,
-    marketingConsent: true,
-    source: 'localpunch-wallet',
-  })
+  const site = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.localpunchcard.io'
 
   if (!alreadyHadEmail) {
-    await sendEvent(email, 'customer_signed_up', {
-      first_name: profile?.display_name ?? '',
-    })
     await sendTransactional('customerWelcome', email, {
       first_name: profile?.display_name ?? 'there',
-      wallet_url: 'https://www.localpunchcard.io/wallet',
+      wallet_url: `${site}/wallet`,
     })
   }
 

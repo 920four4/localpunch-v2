@@ -1,7 +1,7 @@
 /**
  * SMS sender — thin Twilio REST wrapper, no SDK dependency.
  *
- * Mirrors lib/loops.ts: "fire and forget" from the caller's view. If the
+ * Mirrors lib/email.ts: "fire and forget" from the caller's view. If the
  * Twilio env vars aren't set, sendSms() no-ops and returns
  * { sent: false, reason: 'not_configured' } with a console warning — so the
  * SMS-confirm redemption path can ship ahead of a Twilio account and the

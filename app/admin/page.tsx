@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { isLoopsConfigured } from '@/lib/loops'
+import { isEmailConfigured } from '@/lib/email'
 
 export const dynamic = 'force-dynamic'
 
@@ -85,7 +85,7 @@ export default async function AdminPage() {
   }
 
   const arrCents = s.mrr_cents * 12
-  const loopsOn = isLoopsConfigured()
+  const emailOn = isEmailConfigured()
 
   return (
     <div className="space-y-8">
@@ -203,10 +203,10 @@ export default async function AdminPage() {
             missingLabel="STRIPE_SECRET_KEY not set"
           />
           <IntegrationCard
-            name="Loops (email)"
-            ok={loopsOn}
+            name="Resend (email)"
+            ok={emailOn}
             okLabel="Connected"
-            missingLabel="LOOPS_API_KEY not set"
+            missingLabel="RESEND_API_KEY not set"
           />
         </div>
       </div>

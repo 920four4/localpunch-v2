@@ -12,6 +12,8 @@ Configuring custom SMTP only routes mail through Resend. It does **not** automat
 
 Branded HTML for production lives in `supabase/templates/*.html` and must be synced to the **hosted** Supabase project.
 
+Product emails (welcome, drip, billing) use the same visual design via `lib/email.ts` — see `docs/EMAIL_SETUP.md`.
+
 ## Push branded templates to production
 
 ```bash
@@ -38,8 +40,3 @@ Requires `SUPABASE_ACCESS_TOKEN` and `RESEND_SMTP_PASSWORD` (Resend API key) in 
 - Reauthentication
 
 Subjects match `supabase/config.toml`.
-
-## Loops vs Supabase
-
-- **Supabase Auth emails** → magic link, confirm email (this doc)
-- **Loops** → merchant drip + transactional after signup/billing (`docs/LOOPS_SETUP.md`)

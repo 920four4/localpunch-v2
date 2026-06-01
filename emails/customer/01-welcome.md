@@ -1,36 +1,30 @@
 ---
 key: customerWelcome
-envVar: LOOPS_TX_CUSTOMER_WELCOME
-from: LocalPunch <localpunch@920four.com>
+heading: "Welcome to LocalPunch"
 subject: "Welcome — your punch cards live here"
 previewText: "No app. No account hassle. Just rewards at the places you go."
 trigger: Customer adds email in the wallet
-dataVariables:
-  - first_name
-  - wallet_url
 ---
 
 Hey {{first_name}},
 
-Welcome to LocalPunch.
+Welcome to LocalPunch. Your cards live in your browser — no app to install.
 
-You don't need an app — your cards live right in your browser at [{{wallet_url}}]({{wallet_url}}). Bookmark it. We recommend adding it to your home screen so it opens like an app (tap the share icon → Add to Home Screen).
+[Open my wallet →]({{wallet_url}})
+
+Bookmark it or add to your home screen (share icon → Add to Home Screen) so it opens like an app.
 
 ### How it works
 
-1. **Scan** the QR at any LocalPunch shop
-2. **Get punched** when you buy something
-3. **Redeem** when you fill the card — show the screen, they give you the reward
+- Scan a shop's QR code when you visit
+- Enter your phone number once — that's your card
+- Come back, scan again, get punched toward your reward
+- When the card is full, show your wallet to redeem
 
-### What we'll email you
+### Your privacy
 
-Only the good stuff:
-- When a card is ready to redeem
-- When you're one punch away from a reward
-- Nothing else
+We only use your email for punch reminders and reward alerts. We don't sell your data. Unsubscribe anytime by removing your email in wallet settings.
 
-You can unsubscribe any time (link in every email).
-
-Happy collecting 🎉
+Enjoy the punches.
 
 — LocalPunch

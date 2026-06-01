@@ -39,8 +39,7 @@ export default function SetupBusinessPage() {
     setSaving(false)
     if (error) { toast.error(error.message); return }
 
-    // Fire the Loops onboarding event server-side. Non-blocking — if the
-    // Loops API is down we still send the merchant to billing.
+    // Analytics only — welcome email sends on Stripe activation via Resend.
     if (inserted?.id) {
       trackEvent(AnalyticsEvents.BUSINESS_CREATED, {
         business_id: inserted.id,

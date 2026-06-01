@@ -72,7 +72,8 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/manifest') ||
     pathname.startsWith('/icons/') ||
     pathname === '/privacy-policy' ||
-    pathname === '/terms'
+    pathname === '/terms' ||
+    pathname === '/contact'
 
   if (isPublic) {
     // Signed-in users hitting the marketing landing get bounced to their app

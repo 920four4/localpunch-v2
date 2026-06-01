@@ -180,6 +180,7 @@ export async function POST(request: NextRequest) {
   // Milestone nudge (email customers only; phone-only customers skipped).
   await nudgeAfterPunch({
     email: email ?? null,
+    firstName: profile?.display_name,
     punchCount: result.punch_count ?? 0,
     punchesRequired: result.punches_required ?? 0,
     isComplete: result.is_complete ?? false,

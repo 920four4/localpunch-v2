@@ -1,14 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { trackServerSignUp } from '@/lib/analytics/server'
 import { createClient } from '@/lib/supabase/server'
-import { sendEvent, syncContact } from '@/lib/loops'
+import { notifySignup } from '@/lib/telegram/notify'
 
 /**
- * Fired from the client right after a merchant finishes `app/merchant/setup`.
- *
- * We do it server-side so the Loops API key never ships to the browser, and
- * we fetch the owner's email from auth (not from the client) so it can't be
- * spoofed.
+ * Fired from the client after merchant setup — analytics only (email on activation).
  */
 export const dynamic = 'force-dynamic'
 
@@ -28,7 +24,7 @@ export async function POST(request: NextRequest) {
 
   const { data: business } = await supabase
     .from('businesses')
-    .select('id, name, slug, address, created_at')
+    .select('id, name')
     .eq('id', business_id)
     .eq('owner_id', user.id)
     .maybeSingle()
@@ -37,34 +33,19 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'not_found' }, { status: 404 })
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('display_name')
-    .eq('id', user.id)
-    .maybeSingle()
-
-  await syncContact(user.email, {
-    userId: user.id,
-    userGroup: 'merchant',
-    firstName: profile?.display_name ?? undefined,
-    source: 'localpunch-merchant-signup',
-    businessId: business.id,
-    businessName: business.name,
-    businessSlug: business.slug,
-    businessAddress: business.address ?? undefined,
-    businessCreatedAt: business.created_at,
-    subscriptionStatus: 'none',
-  })
-
-  await sendEvent(user.email, 'merchant_signed_up', {
-    business_name: business.name,
-    business_slug: business.slug,
-  })
-
   await trackServerSignUp({
     userId: user.id,
     businessId: business.id,
     businessName: business.name,
+  })
+
+  // Ping the team Telegram on a fresh merchant setup (best-effort).
+  const base = process.env.NEXT_PUBLIC_SITE_URL
+  void notifySignup({
+    email: user.email,
+    name: business.name,
+    plan: 'Merchant (setup complete — not yet activated)',
+    url: base ? { label: 'Open admin', href: `${base}/admin` } : undefined,
   })
 
   return NextResponse.json({ ok: true })

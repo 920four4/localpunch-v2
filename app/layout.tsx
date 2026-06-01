@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Space_Grotesk, DM_Sans, JetBrains_Mono } from 'next/font/google'
 import { AnalyticsProvider } from '@/components/analytics/analytics-provider'
 import { GoogleAnalytics } from '@/components/analytics/google-analytics'
+import { TrackView } from '@/components/track-view'
 import { Toaster } from '@/components/ui/sonner'
 import { SITE_NAME, SITE_URL } from '@/lib/site'
 import './globals.css'
@@ -87,6 +88,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-dvh bg-background text-foreground antialiased overscroll-none" suppressHydrationWarning>
         <GoogleAnalytics />
         <AnalyticsProvider />
+        <TrackView />
         {children}
         <Toaster richColors position="top-center" />
       </body>

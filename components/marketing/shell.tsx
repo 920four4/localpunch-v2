@@ -150,6 +150,11 @@ export function MarketingFooter() {
               </Link>
             </li>
             <li>
+              <Link href="/contact" className="hover:text-[#1a1a1a] block py-1">
+                Contact
+              </Link>
+            </li>
+            <li>
               <Link href="/privacy-policy" className="hover:text-[#1a1a1a] block py-1">
                 Privacy
               </Link>

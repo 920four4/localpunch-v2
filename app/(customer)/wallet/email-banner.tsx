@@ -5,7 +5,7 @@ import { toast } from 'sonner'
 
 /**
  * Dismissible opt-in shown on the wallet when the user has no email on file.
- * If they add one, we fire the Loops customer_welcome email.
+ * If they add one, we send the branded welcome email via Resend.
  */
 export default function EmailBanner({ hasEmail }: { hasEmail: boolean }) {
   const [dismissed, setDismissed] = useState(false)

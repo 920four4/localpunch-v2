@@ -58,7 +58,7 @@ ${
 ## Optional
 
 - Built on Next.js, Supabase, Stripe. Hosted on Vercel.
-- Sending email via Loops.
+- Sending email via Resend (auth SMTP + transactional API).
 - Domain verification for email: localpunch@920four.com.
 - Support: email the team via the signup flow.
 `

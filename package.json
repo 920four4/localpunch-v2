@@ -7,9 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "loops:bootstrap": "./scripts/loops-bootstrap.sh",
-    "loops:verify": "loops contact-properties list --custom",
-    "icons:generate": "node scripts/generate-icons.mjs"
+    "icons:generate": "node scripts/generate-icons.mjs",
+    "email:preview": "npx tsx scripts/send-email-previews.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",
