@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og'
-import { PunchCardLogoMark } from '@/lib/brand-icon'
+import { BrandLogoMark } from '@/lib/brand-icon'
 import { OgCheckmark } from '@/lib/og-checkmark'
 import { loadOgFonts, OG_FONT_BODY, OG_FONT_HEADING } from '@/lib/og-fonts'
 
@@ -165,7 +165,7 @@ export async function createOgImage() {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-              <PunchCardLogoMark size={80} />
+              <BrandLogoMark size={80} />
               <span
                 style={{
                   fontFamily: OG_FONT_HEADING,

@@ -11,7 +11,6 @@ const MUTED = '#5A554C'
 const FOOTER = '#9A9387'
 const FOOTER_LIGHT = '#B0AB9E'
 const YELLOW = '#FFE566'
-const YELLOW_BORDER = '#E0CF4A'
 const DIVIDER = '#EDEBE3'
 
 export function escapeHtml(s: string): string {
@@ -67,7 +66,7 @@ ${preheader}
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;">
 <tr><td style="padding:0 4px 20px 4px;">
 <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-<td style="width:34px;height:34px;vertical-align:middle;"><img src="${site}/apple-icon" width="34" height="34" alt="LocalPunch" style="display:block;border-radius:8px;border:1px solid ${YELLOW_BORDER};" /></td>
+<td style="width:34px;height:34px;vertical-align:middle;"><img src="${site}/apple-icon" width="34" height="34" alt="LocalPunch" style="display:block;border-radius:8px;" /></td>
 <td style="padding-left:10px;font-family:${FONT};font-size:18px;font-weight:700;color:${TEXT};letter-spacing:-0.01em;">LocalPunch</td>
 </tr></table>
 </td></tr>
