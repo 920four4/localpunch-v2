@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Space_Grotesk, DM_Sans, JetBrains_Mono } from 'next/font/google'
 import { AnalyticsProvider } from '@/components/analytics/analytics-provider'
 import { GoogleAnalytics } from '@/components/analytics/google-analytics'
+import { DeskQWidget } from '@/components/support/deskq-widget'
 import { TrackView } from '@/components/track-view'
 import { Toaster } from '@/components/ui/sonner'
 import { SITE_NAME, SITE_URL } from '@/lib/site'
@@ -91,6 +92,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <TrackView />
         {children}
         <Toaster richColors position="top-center" />
+        <DeskQWidget />
       </body>
     </html>
   )
