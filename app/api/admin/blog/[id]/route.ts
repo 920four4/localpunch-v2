@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { authorizeBlogAdmin } from '@/lib/blog-auth'
-import { estimateReadingMinutes, slugify } from '@/lib/blog'
+import { blogCoverAndFaqFields, estimateReadingMinutes, slugify } from '@/lib/blog'
 
 const updateSchema = z
   .object({
@@ -9,7 +9,7 @@ const updateSchema = z
     title: z.string().min(1).max(200),
     excerpt: z.string().max(500).nullable(),
     content: z.string().min(1),
-    cover_image_url: z.string().url().nullable(),
+    ...blogCoverAndFaqFields,
     tags: z.array(z.string()).max(12),
     author_name: z.string().max(80),
     status: z.enum(['draft', 'published', 'archived']),

@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
-import { formatDate, type BlogPostSummary } from '@/lib/blog'
+import { coverImageAlt, formatDate, type BlogPostSummary } from '@/lib/blog'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -35,7 +35,7 @@ export default async function BlogIndexPage() {
   const { data } = await supabase
     .from('blog_posts')
     .select(
-      'id, slug, title, excerpt, cover_image_url, tags, author_name, published_at, reading_time_minutes',
+      'id, slug, title, excerpt, cover_image_url, cover_image_alt, tags, author_name, published_at, reading_time_minutes',
     )
     .eq('status', 'published')
     .lte('published_at', new Date().toISOString())
@@ -87,7 +87,7 @@ function PostCard({ post }: { post: BlogPostSummary }) {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={post.cover_image_url}
-              alt=""
+              alt={coverImageAlt(post.cover_image_alt, post.title)}
               className="w-full h-full object-cover"
             />
           </div>

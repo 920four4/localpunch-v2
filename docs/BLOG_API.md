@@ -29,7 +29,14 @@ Create a new post.
   "excerpt": "A plain-English guide...",
   "content": "# Markdown content…",
   "tags": ["taqueria", "loyalty"],
-  "cover_image_url": "https://...",
+  "cover_image_url": "https://cdn.example.com/taqueria-cover.jpg",
+  "cover_image_alt": "Counter of a taqueria with a stamped punch card",
+  "faq": [
+    {
+      "question": "Do customers need an app?",
+      "answer": "No. They scan a QR code in the mobile browser."
+    }
+  ],
   "status": "published",
   "seo_title": "...",
   "seo_description": "..."
@@ -106,8 +113,43 @@ console.log(post.slug)
 - `slug`: 1–80 chars, auto-kebab-cased (`a-z 0-9 -`)
 - `excerpt`: ≤500 chars
 - `tags`: ≤12 items
-- `cover_image_url`: must be a valid URL
+- `cover_image_url`: optional, must be a valid URL. Empty string is stored as `null`.
+- `cover_image_alt`: optional, ≤300 characters. Describes the cover for screen readers and `og:image`.
+- `faq`: optional, ≤20 `{ "question", "answer" }` pairs. Question 1–300 chars, answer 1–5000 chars. Empty array is stored as `null`.
 - `content`: required, markdown (GFM supported — tables, fenced code, lists)
+
+## Cover image
+
+`cover_image_url` and `cover_image_alt` are both optional. Existing posts that omit them keep working.
+
+When `cover_image_url` is set, the image is:
+
+- rendered at the top of `/blog/:slug` (alt text is `cover_image_alt`, or the post title when alt is omitted)
+- rendered on the `/blog` index card
+- used as the only `og:image` and Twitter card image, with the same alt text (`cover_image_alt`, or the SEO title)
+
+Posts without a cover do not get a cover-specific image tag.
+
+## FAQ
+
+A post can supply FAQ pairs in two ways. The post page emits [FAQPage](https://schema.org/FAQPage) JSON-LD when at least one pair resolves. Posts with no FAQ do not get that script.
+
+1. **API field** — `faq` on create or update. These pairs are stored, shown in a visible FAQ section on the post, and used for the JSON-LD. A stored list replaces a trailing FAQ section in the markdown so the visible questions and the schema match.
+2. **Trailing markdown section** — when `faq` is omitted or empty, the renderer looks for a final heading titled `FAQ`, `FAQs`, or `Frequently Asked Questions`. Nothing except that section's questions may follow it. Questions are either:
+   - a deeper heading (`### Do customers need an app?`) plus the paragraphs under it, or
+   - a bold line of its own that ends with `?`
+
+```md
+## FAQ
+
+**Do customers need an app?**
+No. They scan a QR code in the mobile browser.
+
+**How much does it cost?**
+$60 a month, or $600 a year.
+```
+
+A `## FAQ` that is followed by another section (for example `## Bottom line`) is not treated as the FAQ, so older posts that only mention FAQ in passing are left alone.
 
 ## Post lifecycle
 
@@ -121,9 +163,10 @@ Every published post automatically gets:
 
 - `<title>` and `<meta description>` (with `seo_title` / `seo_description` overrides)
 - `<link rel="canonical">`
-- OpenGraph tags (`og:title`, `og:description`, `og:image`, `og:type=article`)
-- Twitter card tags
+- OpenGraph tags (`og:title`, `og:description`, `og:image` from `cover_image_url` when set, `og:type=article`)
+- Twitter card tags (same cover image)
 - `Article` JSON-LD schema
+- `FAQPage` JSON-LD when the post has FAQ pairs (API field or a trailing FAQ section)
 - Sitemap entry at `/sitemap.xml`
 - Reference in `/llms.txt`
 

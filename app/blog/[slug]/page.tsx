@@ -1,12 +1,17 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import { MarketingFooter, MarketingHeader } from '@/components/marketing/shell'
+import { JsonLd, MarketingFooter, MarketingHeader } from '@/components/marketing/shell'
 import { createClient } from '@/lib/supabase/server'
 import {
+  coverImageAlt,
+  faqPageJsonLd,
   formatDate,
   renderMarkdown,
+  resolvePostFaq,
+  stripTrailingFaq,
   type BlogPost,
+  type FaqPair,
 } from '@/lib/blog'
 
 export const dynamic = 'force-dynamic'
@@ -36,9 +41,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = post.seo_title || post.title
   const description = post.seo_description || post.excerpt || undefined
   const canonical = `${SITE_URL}/blog/${post.slug}`
+  const imageAlt = coverImageAlt(post.cover_image_alt, title)
 
   const coverImage = post.cover_image_url
-    ? [{ url: post.cover_image_url, width: 1200, height: 630, alt: title }]
+    ? [{ url: post.cover_image_url, width: 1200, height: 630, alt: imageAlt }]
     : undefined
 
   return {
@@ -59,7 +65,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: 'summary_large_image',
       title,
       description,
-      ...(coverImage ? { images: coverImage.map((image) => image.url) } : {}),
+      ...(coverImage ? { images: coverImage } : {}),
     },
   }
 }
@@ -69,7 +75,10 @@ export default async function BlogPostPage({ params }: Props) {
   const post = await getPost(slug)
   if (!post) notFound()
 
-  const html = await renderMarkdown(post.content)
+  const faq = resolvePostFaq(post.content, post.faq)
+  const markdown = faq.fromField ? stripTrailingFaq(post.content) : post.content
+  const html = await renderMarkdown(markdown)
+  const faqLd = faqPageJsonLd(faq.pairs)
 
   // JSON-LD Article schema for Google
   const jsonLd = {
@@ -92,18 +101,22 @@ export default async function BlogPostPage({ params }: Props) {
     datePublished: post.published_at,
     dateModified: post.updated_at,
     mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}/blog/${post.slug}` },
-    image: post.cover_image_url || undefined,
+    image: post.cover_image_url
+      ? post.cover_image_alt
+        ? {
+            '@type': 'ImageObject',
+            url: post.cover_image_url,
+            description: post.cover_image_alt,
+          }
+        : post.cover_image_url
+      : undefined,
     keywords: post.tags.join(', '),
   }
 
   return (
     <div className="min-h-screen bg-[#FAFAF8]">
-      {/* JSON-LD */}
-      <script
-        type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
+      {faqLd ? <JsonLd data={faqLd} /> : null}
 
       <MarketingHeader />
 
@@ -157,7 +170,7 @@ export default async function BlogPostPage({ params }: Props) {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={post.cover_image_url}
-              alt=""
+              alt={coverImageAlt(post.cover_image_alt, post.title)}
               className="w-full h-full object-cover"
             />
           </div>
@@ -165,9 +178,10 @@ export default async function BlogPostPage({ params }: Props) {
 
         <div
           className="prose-content"
-          // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: html }}
         />
+
+        {faq.fromField && <PostFaq pairs={faq.pairs} />}
 
         <hr className="my-12 border-[#E5E7EB]" />
 
@@ -193,6 +207,26 @@ export default async function BlogPostPage({ params }: Props) {
 
       <MarketingFooter />
     </div>
+  )
+}
+
+function PostFaq({ pairs }: { pairs: FaqPair[] }) {
+  return (
+    <section className="prose-content" aria-labelledby="post-faq">
+      <h2 id="post-faq">FAQ</h2>
+      {pairs.map((item, index) => (
+        <div key={`${item.question}-${index}`}>
+          <h3>{item.question}</h3>
+          {item.answer
+            .split(/\n{2,}/)
+            .map(paragraph => paragraph.trim())
+            .filter(Boolean)
+            .map((paragraph, paragraphIndex) => (
+              <p key={paragraphIndex}>{paragraph}</p>
+            ))}
+        </div>
+      ))}
+    </section>
   )
 }
 

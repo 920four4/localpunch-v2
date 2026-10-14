@@ -54,6 +54,7 @@ Write in a warm, human, plain-English voice — like a helpful shop owner friend
 - Be honest; mention trade-offs
 - Include 2–3 internal link placeholders as markdown links to paths like /pricing, /for/coffee-shops, /login?role=business
 - End with a soft CTA to try LocalPunch
+- After the CTA, end the markdown with a trailing "## FAQ" section and do not add another heading after it. Use 3 questions. Each question is its own bold line ending in "?", followed by a one- or two-sentence answer.
 - No hype words: "revolutionary", "game-changer", "leverage"
 - Educational and specific with realistic examples`
 
