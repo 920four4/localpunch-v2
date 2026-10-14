@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { authorizeBlogAdmin } from '@/lib/blog-auth'
-import { estimateReadingMinutes, slugify } from '@/lib/blog'
+import { blogCoverAndFaqFields, estimateReadingMinutes, slugify } from '@/lib/blog'
 
 const createSchema = z.object({
   slug: z.string().min(1).max(80).optional(),
   title: z.string().min(1).max(200),
   excerpt: z.string().max(500).optional(),
   content: z.string().min(1),
-  cover_image_url: z.string().url().optional().nullable(),
+  ...blogCoverAndFaqFields,
   tags: z.array(z.string()).max(12).optional(),
   author_name: z.string().max(80).optional(),
   status: z.enum(['draft', 'published', 'archived']).optional(),
@@ -81,6 +81,8 @@ export async function POST(request: NextRequest) {
     excerpt: input.excerpt ?? null,
     content: input.content,
     cover_image_url: input.cover_image_url ?? null,
+    cover_image_alt: input.cover_image_alt ?? null,
+    faq: input.faq ?? null,
     tags: input.tags ?? [],
     author_name: input.author_name ?? 'LocalPunch Team',
     status,

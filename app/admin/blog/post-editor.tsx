@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
-import type { BlogPost, BlogStatus } from '@/lib/blog'
+import { coerceFaqPairs, type BlogPost, type BlogStatus, type FaqPair } from '@/lib/blog'
 
 type EditorPost = Partial<BlogPost> & { content?: string }
 
@@ -23,6 +23,8 @@ export default function PostEditor({
   const [excerpt, setExcerpt] = useState(post.excerpt ?? '')
   const [content, setContent] = useState(post.content ?? '')
   const [coverImage, setCoverImage] = useState(post.cover_image_url ?? '')
+  const [coverAlt, setCoverAlt] = useState(post.cover_image_alt ?? '')
+  const [faqPairs, setFaqPairs] = useState<FaqPair[]>(() => coerceFaqPairs(post.faq))
   const [tags, setTags] = useState((post.tags ?? []).join(', '))
   const [authorName, setAuthorName] = useState(post.author_name ?? 'LocalPunch Team')
   const [status, setStatus] = useState<BlogStatus>(post.status ?? 'draft')
@@ -75,12 +77,25 @@ export default function PostEditor({
       return
     }
 
+    const cleanedFaq = faqPairs
+      .map(pair => ({
+        question: pair.question.trim(),
+        answer: pair.answer.trim(),
+      }))
+      .filter(pair => pair.question || pair.answer)
+    if (cleanedFaq.some(pair => !pair.question || !pair.answer)) {
+      toast.error('Each FAQ needs both a question and an answer')
+      return
+    }
+
     const payload = {
       title: title.trim(),
       slug: slug.trim() || undefined,
       excerpt: excerpt.trim() || null,
       content,
       cover_image_url: coverImage.trim() || null,
+      cover_image_alt: coverAlt.trim() || null,
+      faq: cleanedFaq.length ? cleanedFaq : null,
       tags: tags
         .split(',')
         .map(t => t.trim())
@@ -252,7 +267,10 @@ export default function PostEditor({
         />
       </Field>
 
-      <Field label="Cover image URL">
+      <Field
+        label="Cover image URL"
+        hint="Shown on the post and the blog index, and used as the og:image."
+      >
         <input
           value={coverImage}
           onChange={e => setCoverImage(e.target.value)}
@@ -260,6 +278,20 @@ export default function PostEditor({
           className="w-full border-2 border-[#1a1a1a] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FFE566]"
         />
       </Field>
+
+      <Field
+        label="Cover image alt text"
+        hint="Optional. Describes the image for screen readers and og:image. Falls back to the post title."
+      >
+        <input
+          value={coverAlt}
+          onChange={e => setCoverAlt(e.target.value)}
+          placeholder="Barista handing a stamped punch card across the counter"
+          className="w-full border-2 border-[#1a1a1a] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FFE566]"
+        />
+      </Field>
+
+      <FaqFields pairs={faqPairs} onChange={setFaqPairs} />
 
       <Field
         label="Tags"
@@ -314,6 +346,61 @@ export default function PostEditor({
           </Field>
         </div>
       </details>
+    </div>
+  )
+}
+
+function FaqFields({
+  pairs,
+  onChange,
+}: {
+  pairs: FaqPair[]
+  onChange: (pairs: FaqPair[]) => void
+}) {
+  function update(index: number, patch: Partial<FaqPair>) {
+    onChange(pairs.map((pair, i) => (i === index ? { ...pair, ...patch } : pair)))
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between gap-3">
+        <span className="block text-sm font-semibold">FAQ</span>
+        <button
+          type="button"
+          onClick={() => onChange([...pairs, { question: '', answer: '' }])}
+          className="nb-btn-ghost text-xs px-3 py-1.5"
+        >
+          Add question
+        </button>
+      </div>
+      <p className="text-xs text-[#9CA3AF]">
+        Optional. Leave this empty to use a trailing <code>## FAQ</code> section
+        in the markdown instead. Saved pairs are what the FAQPage schema uses.
+      </p>
+      {pairs.map((pair, index) => (
+        <div key={index} className="nb-card-flat p-3 space-y-2">
+          <input
+            value={pair.question}
+            onChange={e => update(index, { question: e.target.value })}
+            placeholder="Do customers need an app?"
+            className="w-full border-2 border-[#1a1a1a] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FFE566]"
+          />
+          <textarea
+            value={pair.answer}
+            onChange={e => update(index, { answer: e.target.value })}
+            rows={2}
+            placeholder="No. They scan a QR code in the mobile browser."
+            className="w-full border-2 border-[#1a1a1a] rounded-lg px-3 py-2 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-[#FFE566]"
+          />
+          <button
+            type="button"
+            onClick={() => onChange(pairs.filter((_, i) => i !== index))}
+            className="text-xs text-red-600 hover:underline"
+          >
+            Remove
+          </button>
+        </div>
+      ))}
     </div>
   )
 }
