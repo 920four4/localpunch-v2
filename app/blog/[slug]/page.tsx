@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { MarketingFooter, MarketingHeader } from '@/components/marketing/shell'
@@ -8,6 +9,12 @@ import {
   renderMarkdown,
   type BlogPost,
 } from '@/lib/blog'
+import {
+  getPreviewDraftFixture,
+  PREVIEW_SHARE_HEIGHT,
+  PREVIEW_SHARE_WIDTH,
+  type PreviewDraftFixture,
+} from '@/lib/blog-preview-fixture'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -26,13 +33,32 @@ async function getPost(slug: string): Promise<BlogPost | null> {
   return (data as BlogPost | null) ?? null
 }
 
-type Props = { params: Promise<{ slug: string }> }
+// Published rows win. The local fixture is only a fallback, and only when
+// VERCEL_ENV=preview, so a draft never becomes a production URL.
+async function resolvePost(slug: string): Promise<{
+  post: BlogPost | null
+  preview: PreviewDraftFixture | null
+}> {
+  try {
+    const published = await getPost(slug)
+    if (published) return { post: published, preview: null }
+  } catch (error) {
+    if (process.env.VERCEL_ENV !== 'preview') throw error
+  }
+  const preview = getPreviewDraftFixture(slug)
+  return { post: preview?.post ?? null, preview }
+}
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params
-  const post = await getPost(slug)
-  if (!post) return { title: 'Not found — LocalPunch' }
+async function requestOrigin(): Promise<string> {
+  const headerList = await headers()
+  const host = headerList.get('x-forwarded-host')?.split(',')[0]?.trim() || headerList.get('host')
+  if (!host) return SITE_URL
+  const forwarded = headerList.get('x-forwarded-proto')?.split(',')[0]?.trim()
+  const proto = forwarded || (host.startsWith('localhost') || host.startsWith('127.') ? 'http' : 'https')
+  return `${proto}://${host}`
+}
 
+function publishedMetadata(post: BlogPost): Metadata {
   const title = post.seo_title || post.title
   const description = post.seo_description || post.excerpt || undefined
   const canonical = `${SITE_URL}/blog/${post.slug}`
@@ -64,14 +90,57 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
+function previewMetadata(preview: PreviewDraftFixture, origin: string): Metadata {
+  const shareUrl = `${origin}${preview.sharePath}`
+  return {
+    title: { absolute: preview.titleTag },
+    description: preview.metaDescription,
+    alternates: { canonical: preview.canonical },
+    robots: { index: false, follow: false },
+    openGraph: {
+      title: preview.titleTag,
+      description: preview.metaDescription,
+      url: preview.canonical,
+      siteName: 'LocalPunch',
+      type: 'article',
+      images: [
+        {
+          url: shareUrl,
+          width: PREVIEW_SHARE_WIDTH,
+          height: PREVIEW_SHARE_HEIGHT,
+          alt: preview.shareAlt,
+          type: 'image/png',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: preview.titleTag,
+      description: preview.metaDescription,
+      images: [{ url: shareUrl, alt: preview.shareAlt }],
+    },
+  }
+}
+
+type Props = { params: Promise<{ slug: string }> }
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
+  const { post, preview } = await resolvePost(slug)
+  if (preview) return previewMetadata(preview, await requestOrigin())
+  if (!post) return { title: 'Not found — LocalPunch' }
+  return publishedMetadata(post)
+}
+
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params
-  const post = await getPost(slug)
+  const { post, preview } = await resolvePost(slug)
   if (!post) notFound()
 
   const html = await renderMarkdown(post.content)
 
-  // JSON-LD Article schema for Google
+  // JSON-LD Article schema for Google. Preview fixtures emit the packaged
+  // BlogPosting + FAQPage graph instead, and only on that preview response.
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -96,14 +165,19 @@ export default async function BlogPostPage({ params }: Props) {
     keywords: post.tags.join(', '),
   }
 
+  const schemaBlocks = preview
+    ? preview.jsonLd.map(entry => JSON.stringify(entry).replace(/</g, '\\u003c'))
+    : [JSON.stringify(jsonLd)]
+
   return (
     <div className="min-h-screen bg-[#FAFAF8]">
-      {/* JSON-LD */}
-      <script
-        type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      {schemaBlocks.map(block => (
+        <script
+          key={block.slice(0, 80)}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: block }}
+        />
+      ))}
 
       <MarketingHeader />
 
@@ -156,8 +230,10 @@ export default async function BlogPostPage({ params }: Props) {
           <div className="aspect-[2/1] rounded-xl overflow-hidden border-2 border-[#1a1a1a] mb-10 bg-[#F4F4F0]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={post.cover_image_url}
-              alt=""
+              src={preview ? preview.coverPath : post.cover_image_url}
+              alt={preview ? preview.coverAlt : ''}
+              width={preview ? 1600 : undefined}
+              height={preview ? 900 : undefined}
               className="w-full h-full object-cover"
             />
           </div>
@@ -165,7 +241,6 @@ export default async function BlogPostPage({ params }: Props) {
 
         <div
           className="prose-content"
-          // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: html }}
         />
 

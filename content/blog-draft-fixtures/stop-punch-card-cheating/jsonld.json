@@ -1,0 +1,47 @@
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "How to Stop People Cheating Your Punch Card",
+    "description": "Paper stamps are easy to copy. Here's how small shops stop fake punches, screenshot scans and double-dipping, with a simple checklist that doesn't punish regulars.",
+    "url": "https://www.localpunchcard.io/blog/stop-punch-card-cheating",
+    "author": {
+      "@type": "Organization",
+      "name": "LocalPunch"
+    },
+    "isPartOf": {
+      "@type": "Blog",
+      "url": "https://www.localpunchcard.io/blog"
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is punch card fraud actually common?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "There's no good public data on how often it happens in small shops, so be wary of anyone quoting a number. People do openly share ways to fake stamps online, which is reason enough to close the easy gaps."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Should I confront someone I think is cheating?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Keep it calm and about the rule, not the person: \"We can only add one punch per visit.\""
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Will these rules put off honest customers?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Not if they're invisible. A regular should never notice the time limit or the changing QR code. They just get their punch."
+        }
+      }
+    ]
+  }
+]

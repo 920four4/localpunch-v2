@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
+import { isPreviewDraftFixtureRequest } from '@/lib/blog-preview-guard'
 
 // Copies any cookies Supabase refreshed during getUser() onto a new response
 // (e.g. a redirect). Without this, token refreshes are lost on navigation that
@@ -76,6 +77,18 @@ export async function proxy(request: NextRequest) {
     pathname === '/contact'
 
   if (isPublic) {
+    // Draft fixture is served only on Vercel preview. Keep it out of caches
+    // and search indexes. Production responses are unchanged.
+    if (isPreviewDraftFixtureRequest(pathname)) {
+      supabaseResponse.headers.set(
+        'Cache-Control',
+        'private, no-store, no-cache, max-age=0, must-revalidate',
+      )
+      supabaseResponse.headers.set('CDN-Cache-Control', 'no-store')
+      supabaseResponse.headers.set('Vercel-CDN-Cache-Control', 'no-store')
+      supabaseResponse.headers.set('X-Robots-Tag', 'noindex, nofollow')
+    }
+
     // Signed-in users hitting the marketing landing get bounced to their app
     if (pathname === '/' && user) {
       const { data: profile } = await supabase
